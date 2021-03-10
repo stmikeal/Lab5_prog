@@ -4,11 +4,12 @@
  * and open the template in the editor.
  */
 package command;
+import window.Console;
 
 /**
  *
  * @author mike
  */
 public class CommandAdd {
-    
+    public static void event(Console console, String[] args){}
 }

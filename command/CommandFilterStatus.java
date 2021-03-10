@@ -5,10 +5,12 @@
  */
 package command;
 
+import window.Console;
+
 /**
  *
  * @author mike
  */
 public class CommandFilterStatus {
-    
+    public static void event(Console console, String[] args){}
 }

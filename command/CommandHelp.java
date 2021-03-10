@@ -5,10 +5,13 @@
  */
 package command;
 
+import window.Console;
+
 /**
  *
  * @author mike
  */
 public class CommandHelp {
-    
+    public static void event(Console console, String[] args){
+    }
 }

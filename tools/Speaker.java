@@ -5,6 +5,8 @@
  */
 package tools;
 import java.util.Scanner;
+import java.io.InputStream;
+import java.io.IOException;
 /**
  *
  * @author mike
@@ -41,6 +43,17 @@ public class Speaker {
     public static String scanString(String s){
         System.out.println(s);
         return scanString();
+    }
+    
+    public static String scanStream(InputStream stream){
+        String result = "";
+        int c;
+        try{
+            while((c = stream.read())!=-1)result += (char)c;
+        } catch(IOException e){
+            System.out.println("Возникли проблемы с парсингом:(");
+        }
+        return result;
     }
     
     public static void hr(){System.out.println(hr);}

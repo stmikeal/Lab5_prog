@@ -13,22 +13,24 @@ import java.util.Arrays;
  * @author mike
  */
 public class ConsoleStream extends InputStream{
-    private char[] command = null;
+    private char[] command = {};
     private boolean ret = false;
+    private int counter = 0;
 
     @Override
     public int read() throws IOException {
-        if (command==null){
+        if (counter == command.length){
             if (ret){
                 ret = false;
                 return -1;
             }else {
+                counter=0;
                 command = Speaker.scanString().toCharArray();
                 ret = true;
             }
         }
-        char result = command[0];
-        command = Arrays.copyOfRange(command, 1, command.length);
+        char result = command[counter];
+        counter++;
         return result;
     }
     

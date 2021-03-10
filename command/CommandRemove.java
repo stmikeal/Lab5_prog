@@ -5,10 +5,12 @@
  */
 package command;
 
+import window.Console;
+
 /**
  *
  * @author mike
  */
-public class ComandRemove {
-    
+public class CommandRemove {
+    public static void event(Console console, String[] args){}
 }
