@@ -6,4 +6,12 @@ public class Person {
     private Color eyeColor; //Поле не может быть null
     private Color hairColor; //Поле не может быть null
     private Country nationality; //Поле не может быть null
+    
+    public Person(Integer height, Color eyeColor, Color hairColor, Country nationality){
+        this.height=height;
+        this.eyeColor=eyeColor;
+        this.hairColor=hairColor;
+        this.nationality=nationality;
+    }
+    
 }

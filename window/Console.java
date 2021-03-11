@@ -4,8 +4,11 @@ import tools.*;
 import exception.EnvException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import command.*;
+import java.util.TreeSet;
+import element.Worker;
+import java.util.Comparator;
+
 
 public class Console {
     private static final String ENV_PATH = "LAB_PATH"; //there're names of env. var.'s
@@ -13,14 +16,20 @@ public class Console {
             + "programm/Lab5/Lab5/src/main/java/data";
     private FileReader reader;
     private String path;
+    private TreeSet<Worker> collection;
     
     public Console(){
+       Comparator<Worker> comparator = (o1,o2)->
+               ((Integer)o1.getId()).compareTo((Integer)o2.getId());
+       collection = new TreeSet(comparator);
+       
        try {
            path = EnvReader.getenv(ENV_PATH);
        } catch(EnvException e) {
            Speaker.println(e.getMessage(),"Устанавливаем значение по умолчанию...");
            path = DEF_PATH;
        }
+       
        try{
            reader = new FileReader(path);
        } catch(IOException e){
