@@ -37,7 +37,7 @@ public class Speaker {
     }
     
     public static String scanString(){
-        return (String)scanner.nextLine();
+        return scanner.nextLine();
     }
     
     public static String scanString(String s){
@@ -46,14 +46,8 @@ public class Speaker {
     }
     
     public static String scanStream(InputStream stream){
-        String result = "";
-        int c;
-        try{
-            while((c = stream.read())!=-1)result += (char)c;
-        } catch(IOException e){
-            System.out.println("Возникли проблемы с парсингом:(");
-        }
-        return result;
+        Scanner reader = new Scanner(stream);
+        return reader.nextLine();
     }
     
     public static void hr(){System.out.println(hr);}

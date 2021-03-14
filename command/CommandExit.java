@@ -12,5 +12,5 @@ import window.Console;
  * @author mike
  */
 public class CommandExit {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){System.exit(0);}
 }

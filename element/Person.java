@@ -14,4 +14,15 @@ public class Person {
         this.nationality=nationality;
     }
     
+    @Override
+    public String toString(){
+        String result = Integer.toString(height);
+        if (eyeColor==null) result+=", null";
+        else result+= ", "+eyeColor.toString();
+        if (hairColor==null) result+=", null";
+        else result+= ", "+hairColor.toString();
+        if (nationality==null) result+=", null";
+        else result+= ", "+nationality.toString();
+        return result;
+    }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
  *
  * @author mike
  */
-public class readWorker {
+public class ReadWorker {
     public static Worker read(InputStream stream)throws IOException{
         boolean isConsole = false;
         String error = "Скрипт не выполнен, проверьте корректность данных.";
@@ -33,16 +33,16 @@ public class readWorker {
         Country nationality = null;
         Person person = null;
         
-        if (stream.getClass()==ConsoleStream.class) isConsole=true;
+        if (stream.equals(System.in)) isConsole=true;
         
         if (isConsole)Speaker.hr();
         
         /////////////////////////////////////////////////////////////
         while(true){
             if (isConsole)Speaker.println("Введите имя:");
-            name = Speaker.scanStream(stream);
+            name = Speaker.scanStream(stream).trim();
             if (!isConsole&"".equals(name))throw new IOException(error);
-            if ("".equals(name))Speaker.println("Введите не пустую строку!");
+            if (name==null||name.equals(""))Speaker.println("Введите не пустую строку!");
             else break;
         }
         
@@ -173,14 +173,14 @@ public class readWorker {
         
         /////////////////////////////////////////////////////////////////////////
         boolean pers = true;
-        while(pers){
+        //while(pers){
             while(pers){
-                if (isConsole)Speaker.println("Будем вводить личные данные?(д/н):");
+                if (isConsole)Speaker.println("Будем вводить личные данные?(y/n):");
                 try{
-                    String answer = Speaker.scanStream(stream);
+                    String answer = Speaker.scanStream(stream).trim();
                     switch(answer){
-                        case"д": break;
-                        case"н": pers=false;break;
+                        case"y": break;
+                        case"n": pers=false;break;
                         default: throw new IOException("");
                     }
                     break;
@@ -260,7 +260,7 @@ public class readWorker {
                 }     
             }
             if(pers) person = new Person(height, eyeColor, hairColor, nationality);
-        }
+        //}
         
         if (isConsole)Speaker.hr();
         return new Worker(name, new Coordinates(x,y), salary, startAt,

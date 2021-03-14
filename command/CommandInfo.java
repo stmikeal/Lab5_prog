@@ -12,5 +12,7 @@ import window.Console;
  * @author mike
  */
 public class CommandInfo {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){
+        System.out.println(console.info());
+    }
 }

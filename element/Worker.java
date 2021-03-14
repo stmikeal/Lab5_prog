@@ -34,4 +34,20 @@ public class Worker {
                 ((person!=null)?1/2048:0) )*100000000);
     }
     public int getId(){return id;}
+    
+    @Override
+    public String toString(){
+        String result = "";
+        result += "name, "+name+"\n";
+        result += "coordinates, "+coordinates.getX()+", "+coordinates.getY()+"\n";
+        result += "salary, "+Double.toString(salary)+"\n";
+        result += "startDate, "+startDate.toString()+"\n";
+        if(position==null)result += "position, null\n";
+        else result += "position, "+position.toString()+"\n";
+        if(status==null)result += "status, null\n";
+        else result += "status, "+status.toString()+"\n";
+        if(person==null)result += "person, null\n";
+        else result += "person, "+person.toString();
+        return result;
+    }
 }

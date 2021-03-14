@@ -14,22 +14,16 @@ import java.io.BufferedInputStream;
  * @author mike
  */
 public class FileReader {
-    private final File purpose;
+    private static File purpose;
     //private FileInputStream inputContainer;
     private BufferedInputStream inputer;
     
-    public FileReader(String path) throws FileNotFoundException, IOException{
+    public static BufferedInputStream getStream(String path) throws FileNotFoundException, IOException{
         
         purpose = new File(path);
         if (!purpose.exists()){
             Speaker.println("Файла по указанному пути не сущетсвует.");
-            Speaker.println("Пытаемся создать файл...");
-            if (purpose.createNewFile()){
-                Speaker.println("Пустой файл удачно создан");
-            } else {
-                throw new FileNotFoundException("Не удалось корректно "
-                        + "создать файл "+path);
-            }
+            throw new FileNotFoundException("");
         }
         
         if (purpose.isDirectory()){
@@ -39,7 +33,7 @@ public class FileReader {
         }
         
         FileInputStream inputContainer = new FileInputStream(purpose);
-        inputer = new BufferedInputStream(inputContainer);
+        return new BufferedInputStream(inputContainer);
         
     }
     

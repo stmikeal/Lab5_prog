@@ -19,17 +19,21 @@ public class ConsoleStream extends InputStream{
 
     @Override
     public int read() throws IOException {
-        if (counter == command.length){
+        if (counter >= command.length){
             if (ret){
                 ret = false;
                 return -1;
             }else {
                 counter=0;
-                command = Speaker.scanString().toCharArray();
+                String s = Speaker.scanString();
+                System.out.println(s);
+                command = s.toCharArray();
                 ret = true;
             }
         }
-        char result = command[counter];
+        char result = (char)-1;
+        if (command.length>0) result = command[counter];
+        System.out.println(result);
         counter++;
         return result;
     }
