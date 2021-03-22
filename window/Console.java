@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.time.LocalDate;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 
@@ -50,20 +51,20 @@ public class Console {
     public final void load() throws Exception{
         
         try{
-           BufferedInputStream reader = FileReader.getStream(path);
-        
-        InputStream stream = reader;
-        Scanner scanner = new Scanner(stream);
-        int year = Integer.parseInt(scanner.nextLine());
-        int month = Integer.parseInt(scanner.nextLine());
-        int day = Integer.parseInt(scanner.nextLine());
-        this.createDate = LocalDate.of(year, month, day);
-        int elem = Integer.parseInt(scanner.nextLine());
-        for(int i=0; i<elem;i++){
-            this.addToCol(ReadWorker.read(stream));
-        }
+            BufferedInputStream reader = FileReader.getStream(path);
+            InputStream stream = reader;
+            Scanner scanner = new Scanner(reader);
+            int year = Integer.parseInt(scanner.nextLine());
+            int month = Integer.parseInt(scanner.nextLine());
+            int day = Integer.parseInt(scanner.nextLine());
+            this.createDate = LocalDate.of(year, month, day);
+            int elem = Integer.parseInt(scanner.nextLine());
+            for(int i=0; i<elem;i++){
+                this.addToCol(ReadWorker.read(stream));
+            }
+            reader.close();
         } catch(IOException e){
-           Speaker.println(Speaker.FontColor.RED, 
+            Speaker.println(Speaker.FontColor.RED, 
                    "Не удалось открыть или создать файл.",
                    "Попробуйте изменить путь в переменной окружения.");
         }
@@ -73,15 +74,14 @@ public class Console {
         try{
             OutputStreamWriter writer = new OutputStreamWriter(
                     new FileOutputStream(new File(path)));
-            writer.write(Integer.toString(createDate.getYear()));
-            System.out.println("year written");
-            writer.write(Integer.toString(createDate.getMonthValue()));
-            writer.write(Integer.toString(createDate.getDayOfMonth()));
-            writer.write(Integer.toString(collection.size()));
+            writer.write(Integer.toString(createDate.getYear())+"\n");
+            writer.write(Integer.toString(createDate.getMonthValue())+"\n");
+            writer.write(Integer.toString(createDate.getDayOfMonth())+"\n");
+            writer.write(Integer.toString(collection.size())+"\n");
             for(Worker elem:collection){
-                writer.write(elem.toStringSave());
-                System.out.println("elem written");
+                writer.write(elem.toStringSave()+"\n");
             }
+            writer.close();
         }catch(Exception e){
             Speaker.println("Не удалось корректно сохранить коллекцию.");
         }
@@ -192,10 +192,16 @@ public class Console {
     public void listen(InputStream stream){
         String command;
         Scanner scanner = new Scanner(stream);
-        while(true){
-            command = scanner.nextLine();
-            choice(command,stream);
+        try{
+            while(scanner.hasNext()){
+                command = scanner.nextLine();
+                choice(command,stream);
+            }
+        }catch(NoSuchElementException e){
+            Speaker.println("Выходим из консоли...");
+            CommandExit.event(this, history);
         }
+        
     }
     
     public static void main(String[] args){

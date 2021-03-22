@@ -40,12 +40,11 @@ public class ReadWorker {
         /////////////////////////////////////////////////////////////
         while(true){
             if (isConsole)Speaker.println("Введите имя:");
-            name = Speaker.scanStream(stream).trim();
+            name = Speaker.scanStream(stream);
             if (!isConsole&"".equals(name))throw new IOException(error);
             if (name==null||name.equals(""))Speaker.println("Введите не пустую строку!");
             else break;
         }
-        
         ////////////////////////////////////////////////////////////////////
         while(true){
             if (isConsole)Speaker.println("Введите координату х большую -623:");
@@ -256,7 +255,7 @@ public class ReadWorker {
                     break;
                 } catch(IOException e){
                     if (!isConsole) throw new IOException(error);
-                    Speaker.println("Введите цвет!");
+                    Speaker.println("Введите национальность!");
                 }     
             }
             if(pers) person = new Person(height, eyeColor, hairColor, nationality);

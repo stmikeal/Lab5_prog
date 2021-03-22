@@ -70,6 +70,7 @@ public class Worker {
     @Override
     public String toString(){
         String result = "";
+        result += "id, "+id+"\n";
         result += "name, "+name+"\n";
         result += "coordinates, "+coordinates.getX()+", "+coordinates.getY()+"\n";
         result += "salary, "+Double.toString(salary)+"\n";
@@ -88,7 +89,7 @@ public class Worker {
         result += name+"\n";
         result += coordinates.getX()+"\n"+coordinates.getY()+"\n";
         result += Double.toString(salary)+"\n";
-        result += startDate.getYear()+"\n"+startDate.getMonth()+"\n"+startDate.getDayOfMonth()+"\n";
+        result += startDate.getYear()+"\n"+startDate.getMonthValue()+"\n"+startDate.getDayOfMonth()+"\n";
         if(position==null)result += "null\n";
         else result += position.toString()+"\n";
         if(status==null)result += "null\n";
