@@ -5,6 +5,7 @@
  */
 package command;
 
+import tools.Speaker;
 import window.Console;
 
 /**
@@ -12,5 +13,12 @@ import window.Console;
  * @author mike
  */
 public class CommandFilterContains {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){
+        try{
+            String name = args[1];
+            console.filterName(name);
+        }catch(Exception e){
+            Speaker.println("Не удалось конкретно считать шаблон.");
+        }
+    }
 }

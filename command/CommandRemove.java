@@ -5,6 +5,7 @@
  */
 package command;
 
+import tools.Speaker;
 import window.Console;
 
 /**
@@ -12,5 +13,12 @@ import window.Console;
  * @author mike
  */
 public class CommandRemove {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){
+        try{
+            int id = Integer.parseInt(args[1]);
+            console.remove(id);
+        }catch(Exception e){
+            Speaker.println("Не можем считать id.");
+        }
+    }
 }

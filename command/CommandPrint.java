@@ -5,6 +5,7 @@
  */
 package command;
 
+import tools.Speaker;
 import window.Console;
 
 /**
@@ -12,5 +13,7 @@ import window.Console;
  * @author mike
  */
 public class CommandPrint {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){
+        Speaker.println(console.print());
+    }
 }

@@ -10,14 +10,18 @@ import element.Worker;
 import java.util.Comparator;
 import java.util.Scanner;
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
 
 public class Console {
     private static final String ENV_PATH = "LAB_PATH"; //there're names of env. var.'s
     private static final String DEF_PATH = "/home/mike/Рабочий стол/data/"
             + "programm/Lab5/Lab5/src/main/java/data";
-    private BufferedInputStream reader;
     private String path;
     private TreeSet<Worker> collection;
     private LocalDate createDate = LocalDate.now();
@@ -35,13 +39,65 @@ public class Console {
            path = DEF_PATH;
        }
        
+       
        try{
-           reader = FileReader.getStream(path);
-       } catch(IOException e){
+           load();
+       }catch(Exception e){
+           System.out.println("Не удалось до конца считать файл.");
+       }
+    }
+    
+    public final void load() throws Exception{
+        
+        try{
+           BufferedInputStream reader = FileReader.getStream(path);
+        
+        InputStream stream = reader;
+        Scanner scanner = new Scanner(stream);
+        int year = Integer.parseInt(scanner.nextLine());
+        int month = Integer.parseInt(scanner.nextLine());
+        int day = Integer.parseInt(scanner.nextLine());
+        this.createDate = LocalDate.of(year, month, day);
+        int elem = Integer.parseInt(scanner.nextLine());
+        for(int i=0; i<elem;i++){
+            this.addToCol(ReadWorker.read(stream));
+        }
+        } catch(IOException e){
            Speaker.println(Speaker.FontColor.RED, 
                    "Не удалось открыть или создать файл.",
                    "Попробуйте изменить путь в переменной окружения.");
-       }
+        }
+    }
+    
+    public void save(){
+        try{
+            OutputStreamWriter writer = new OutputStreamWriter(
+                    new FileOutputStream(new File(path)));
+            writer.write(Integer.toString(createDate.getYear()));
+            System.out.println("year written");
+            writer.write(Integer.toString(createDate.getMonthValue()));
+            writer.write(Integer.toString(createDate.getDayOfMonth()));
+            writer.write(Integer.toString(collection.size()));
+            for(Worker elem:collection){
+                writer.write(elem.toStringSave());
+                System.out.println("elem written");
+            }
+        }catch(Exception e){
+            Speaker.println("Не удалось корректно сохранить коллекцию.");
+        }
+    }
+    
+    public void remove(int id){
+        Worker compared = collection.floor(new Worker(id)); 
+        if(id==compared.getId())collection.remove(compared);
+    }
+    
+    public void removeLower(){
+        try{
+            collection.remove(collection.first());
+        }catch(Exception e){
+            Speaker.println("Коллекция пуста.");
+        }
     }
     
     public void clear(){
@@ -52,6 +108,15 @@ public class Console {
         String result = "---\n";
         for(Worker iter:collection){
             result+=iter.toString()+"---";
+        }
+        return result;
+    }
+    
+    public String print(){
+        String result = "---\n";
+        Iterator<Worker> iter = collection.iterator();
+        while(iter.hasNext()){
+            result+=iter.next().toString()+"---";
         }
         return result;
     }
@@ -71,6 +136,30 @@ public class Console {
                 Integer.toString(collection.size())+" elements.";
     }
     
+    public int first(){
+        return collection.first().getId();
+    }
+    
+    public void filterName(String name){
+        Speaker.println("---");
+        for(Worker elem:collection){
+            if(Pattern.matches(".*"+name+".*",elem.getName())){
+                Speaker.println(elem.toString());
+                Speaker.println("---");
+            }
+        }
+    }
+    
+    public void filterStatus(int status){
+        Speaker.println("---");
+        for(Worker elem:collection){
+            if(elem.statusToInt()<status){
+                Speaker.println(elem.toString());
+                Speaker.println("---");
+            }
+        }
+    }
+    
     private void choice(String command, InputStream stream){
         String[] commandArr = command.trim().split(" ");
         try{
@@ -85,13 +174,13 @@ public class Console {
             case "info": CommandInfo.event(this, commandArr); break;
             case "show": CommandShow.event(this, commandArr); break;
             case "add": CommandAdd.event(this, commandArr, stream); break;
-            case "update": CommandUpdate.event(this, commandArr); break;
+            case "update": CommandUpdate.event(this, commandArr,stream); break;
             case "remove_by_id": CommandRemove.event(this, commandArr); break;
             case "clear": CommandClear.event(this, commandArr); break;
             case "save": CommandSave.event(this, commandArr); break;
             case "execute_script": CommandExecute.event(this, commandArr); break;
             case "exit": CommandExit.event(this, commandArr); break;
-            case "add_if_min": CommandAddIfMin.event(this, commandArr); break;
+            case "add_if_min": CommandAddIfMin.event(this, commandArr, stream); break;
             case "remove_lower": CommandRemoveLower.event(this, commandArr); break;
             case "history": CommandHistory.event(this, commandArr); break;
             case "filter_contains_name": CommandFilterContains.event(this, commandArr); break;

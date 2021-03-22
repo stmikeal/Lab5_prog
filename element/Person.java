@@ -25,4 +25,15 @@ public class Person {
         else result+= ", "+nationality.toString();
         return result;
     }
+    
+    public String toStringSave(){
+        String result = Integer.toString(height)+"\n";
+        if (eyeColor==null) result+="null\n";
+        else result+= ", "+eyeColor.toString();
+        if (hairColor==null) result+=", null\n";
+        else result+= ", "+hairColor.toString();
+        if (nationality==null) result+=", null\n";
+        else result+= ", "+nationality.toString();
+        return result;
+    }
 }

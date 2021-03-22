@@ -33,7 +33,39 @@ public class Worker {
                 ((status!=null)?1/512:0)+
                 ((person!=null)?1/2048:0) )*100000000);
     }
+    
+    public Worker(int id){
+        this.id = id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
     public int getId(){return id;}
+    public String getName(){return name;}
+    public static int statusToInt(String status){
+        switch(status){
+            case "RECOMMENDED_FOR_PROMOTION" : return 2;
+            case "FIRED" : return 1;
+            case "REGULAR" : return 3;
+            case "null": return 0;
+            default: return -1;
+        }
+    }
+    public static int statusToInt(Status status){
+        if(status==null)return 0;
+        switch(status){
+            case RECOMMENDED_FOR_PROMOTION : return 2;
+            case FIRED : return 1;
+            case REGULAR : return 3;
+            default: return -1;
+        }
+    }
+    public int statusToInt(){
+        status = this.status;
+        return statusToInt(status);
+    }
     
     @Override
     public String toString(){
@@ -48,6 +80,21 @@ public class Worker {
         else result += "status, "+status.toString()+"\n";
         if(person==null)result += "person, null\n";
         else result += "person, "+person.toString();
+        return result;
+    }
+    
+    public String toStringSave(){
+        String result = "";
+        result += name+"\n";
+        result += coordinates.getX()+"\n"+coordinates.getY()+"\n";
+        result += Double.toString(salary)+"\n";
+        result += startDate.getYear()+"\n"+startDate.getMonth()+"\n"+startDate.getDayOfMonth()+"\n";
+        if(position==null)result += "null\n";
+        else result += position.toString()+"\n";
+        if(status==null)result += "null\n";
+        else result += status.toString()+"\n";
+        if(person==null)result += "n\n";
+        else result += "y\n"+person.toStringSave();
         return result;
     }
 }

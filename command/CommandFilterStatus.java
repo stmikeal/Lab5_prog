@@ -5,6 +5,8 @@
  */
 package command;
 
+import element.Worker;
+import tools.Speaker;
 import window.Console;
 
 /**
@@ -12,5 +14,13 @@ import window.Console;
  * @author mike
  */
 public class CommandFilterStatus {
-    public static void event(Console console, String[] args){}
+    public static void event(Console console, String[] args){
+        try{
+            int index = Worker.statusToInt(args[1]);
+            if(index!=-1)console.filterStatus(index);
+            else Speaker.println("Некорректный статус.");
+        }catch(Exception e){
+            Speaker.println("Не можем корректно считать статус.");
+        }
+    }
 }

@@ -37,7 +37,7 @@ public class FileReader {
         
     }
     
-    public String readWord(){
+    public String nextLine(){
         
         int i;
         try{
