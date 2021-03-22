@@ -5,8 +5,8 @@ import exception.EnvException;
 import java.io.IOException;
 import java.io.InputStream;
 import command.*;
+import element.*;
 import java.util.TreeSet;
-import element.Worker;
 import java.util.Comparator;
 import java.util.Scanner;
 import java.io.BufferedInputStream;
@@ -17,6 +17,8 @@ import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 
 public class Console {
@@ -29,6 +31,11 @@ public class Console {
     private String[] history = new String[14];
     
     public Console(){
+       Speaker.hr();
+       Speaker.println("Доброго дня, СЭР!", 
+               "Приветствую вас в программе SuperSlamMegaTerminalEmployee.",
+               "Если не знаете, что делать введите help.");
+       Speaker.hr();
        Comparator<Worker> comparator = (o1,o2)->
                ((Integer)o1.getId()).compareTo((Integer)o2.getId());
        collection = new TreeSet(comparator);
@@ -43,30 +50,94 @@ public class Console {
        
        try{
            load();
-       }catch(Exception e){
+       }catch(NoSuchElementException e){
            System.out.println("Не удалось до конца считать файл.");
        }
     }
     
-    public final void load() throws Exception{
+    public final void load() throws NoSuchElementException{
         
         try{
             BufferedInputStream reader = FileReader.getStream(path);
-            InputStream stream = reader;
             Scanner scanner = new Scanner(reader);
-            int year = Integer.parseInt(scanner.nextLine());
-            int month = Integer.parseInt(scanner.nextLine());
-            int day = Integer.parseInt(scanner.nextLine());
+            Deque<String> text = new ArrayDeque<String>();
+            String[] elements;
+            while(scanner.hasNext()){
+                elements = scanner.nextLine().trim().split(",");
+                for(String iter:elements){
+                    String newElem = iter.trim();
+                    if (!newElem.equals(""))text.add(newElem);
+                }
+            }
+            int year = Integer.parseInt(text.pop());
+            int month = Integer.parseInt(text.pop());
+            int day = Integer.parseInt(text.pop());
             this.createDate = LocalDate.of(year, month, day);
-            int elem = Integer.parseInt(scanner.nextLine());
+            int elem = Integer.parseInt(text.pop());
             for(int i=0; i<elem;i++){
-                this.addToCol(ReadWorker.read(stream));
+                String name = text.pop();
+                Coordinates coordinates = new Coordinates(Double.parseDouble(text.pop()),
+                    Double.parseDouble(text.pop()));
+                Double salary = Double.parseDouble(text.pop());
+                LocalDate startDate = LocalDate.of(Integer.parseInt(text.pop()), 
+                        Integer.parseInt(text.pop()), Integer.parseInt(text.pop()));
+                Position position;
+                switch(text.pop()){
+                    case "DIRECTOR": position = Position.DIRECTOR; break;
+                    case "ENGINEER": position = Position.ENGINEER; break;
+                    case "HEAD_OF_DIVISION": position = Position.HEAD_OF_DIVISION; break;
+                    default: position = null;
+                }
+                Status status;
+                switch(text.pop()){
+                    case "FIRED": status = Status.FIRED; break;
+                    case "RECOMMENDED_FOR_PROMOTION": status = Status.RECOMMENDED_FOR_PROMOTION; break;
+                    case "REGULAR": status = Status.REGULAR; break;
+                    default: status = null;
+                }
+                Person person;
+                if (text.pop().equals("y")){
+                    int height = Integer.parseInt(text.pop());
+                    Color eye;
+                    switch(text.pop()){
+                        case "BLUE": eye = Color.BLUE; break;
+                        case "GREEN": eye = Color.GREEN; break;
+                        case "ORANGE": eye = Color.ORANGE; break;
+                        case "WHITE": eye = Color.WHITE; break;
+                        default: eye = null;
+                    }
+                    Color hair;
+                    switch(text.pop()){
+                        case "YELLOW": hair = Color.YELLOW; break;
+                        case "BROWN": hair = Color.BROWN; break;
+                        case "WHITE": hair = Color.WHITE; break;
+                        default: hair = null;
+                    }
+                    Country nation;
+                    switch(text.pop()){
+                        case "RUSSIA": nation = Country.RUSSIA; break;
+                        case "UNITED_KINGDOM": nation = Country.UNITED_KINGDOM; break;
+                        case "GERMANY": nation = Country.GERMANY; break;
+                        case "ITALY": nation = Country.ITALY; break;
+                        default: nation = null;
+                    }
+                    person = new Person(height, eye, hair, nation);
+                }else{ 
+                    person = null;
+                }
+                this.addToCol(new Worker(name, coordinates, salary, startDate,
+                position, status, person));
+                
             }
             reader.close();
         } catch(IOException e){
             Speaker.println(Speaker.FontColor.RED, 
                    "Не удалось открыть или создать файл.",
                    "Попробуйте изменить путь в переменной окружения.");
+        } catch (NumberFormatException e){
+            Speaker.println("Не удалось прочитать число.");
+        } catch (java.time.DateTimeException e) {
+            Speaker.println("Неверный формат даты");
         }
     }
     
@@ -107,7 +178,7 @@ public class Console {
     public String show(){
         String result = "---\n";
         for(Worker iter:collection){
-            result+=iter.toString()+"---";
+            result+=iter.toString()+"---\n";
         }
         return result;
     }

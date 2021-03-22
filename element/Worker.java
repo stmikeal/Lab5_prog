@@ -69,7 +69,7 @@ public class Worker {
     
     @Override
     public String toString(){
-        String result = "";
+        String result = "";           
         result += "id, "+id+"\n";
         result += "name, "+name+"\n";
         result += "coordinates, "+coordinates.getX()+", "+coordinates.getY()+"\n";
@@ -80,7 +80,7 @@ public class Worker {
         if(status==null)result += "status, null\n";
         else result += "status, "+status.toString()+"\n";
         if(person==null)result += "person, null\n";
-        else result += "person, "+person.toString();
+        else result += "person, "+person.toString()+"\n";
         return result;
     }
     

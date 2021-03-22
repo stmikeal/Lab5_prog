@@ -5,7 +5,6 @@
  */
 package command;
 
-import tools.Speaker;
 import window.Console;
 
 /**
@@ -14,6 +13,6 @@ import window.Console;
  */
 public class CommandShow {
     public static void event(Console console, String[] args){
-        Speaker.println(console.show());
+        System.out.print(console.show());
     }
 }
