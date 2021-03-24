@@ -20,7 +20,10 @@ import java.util.regex.Pattern;
 import java.util.Deque;
 import java.util.ArrayDeque;
 
-
+/**
+ *
+ * @author mike
+ */
 public class Console {
     private static final String ENV_PATH = "LAB_PATH"; //there're names of env. var.'s
     private static final String DEF_PATH = "/home/mike/Рабочий стол/data/"
@@ -49,18 +52,22 @@ public class Console {
        
        
        try{
+           if (path.equals("/dev/zero")) throw new NoSuchElementException();
            load();
        }catch(NoSuchElementException e){
            System.out.println("Не удалось до конца считать файл.");
        }
     }
     
+    /**
+     *
+     * @throws NoSuchElementException
+     */
     public final void load() throws NoSuchElementException{
         
-        try{
-            BufferedInputStream reader = FileReader.getStream(path);
+        try(BufferedInputStream reader = FileReader.getStream(path)){
             Scanner scanner = new Scanner(reader);
-            Deque<String> text = new ArrayDeque<String>();
+            Deque<String> text = new ArrayDeque<>();
             String[] elements;
             while(scanner.hasNext()){
                 elements = scanner.nextLine().trim().split(",");
@@ -142,9 +149,8 @@ public class Console {
     }
     
     public void save(){
-        try{
-            OutputStreamWriter writer = new OutputStreamWriter(
-                    new FileOutputStream(new File(path)));
+        try(OutputStreamWriter writer = new OutputStreamWriter(
+                    new FileOutputStream(new File(path)))){
             writer.write(Integer.toString(createDate.getYear())+"\n");
             writer.write(Integer.toString(createDate.getMonthValue())+"\n");
             writer.write(Integer.toString(createDate.getDayOfMonth())+"\n");
@@ -195,7 +201,7 @@ public class Console {
     public String history(){
         String result = "";
         for(String elem:this.history){
-            if (elem==null)break;
+            if (elem==null)return result;
             result+=elem+", ";
         }
         result = result.substring(0, result.length()-2);
@@ -208,7 +214,8 @@ public class Console {
     }
     
     public int first(){
-        return collection.first().getId();
+        if (collection.size()==0)return -2147483648;
+        else return collection.first().getId();
     }
     
     public void filterName(String name){
@@ -231,33 +238,42 @@ public class Console {
         }
     }
     
-    private void choice(String command, InputStream stream){
-        String[] commandArr = command.trim().split(" ");
+    private void addToHistory(String command){
         try{
-            command = commandArr[0];
             for(int i=history.length-2; i>=0; i--){
                 history[i+1]=history[i];
             }
             history[0] = command;
         }catch(Exception e){return;}
+    }
+    
+    private void choice(String command, InputStream stream){
+        String[] commandArr = command.trim().split(" ");
+        Boolean historicalString = false;
+        try{
+            command = commandArr[0];
+        }catch(Exception e){return;}
         switch(command){
-            case "help": CommandHelp.event(this, commandArr); break;
-            case "info": CommandInfo.event(this, commandArr); break;
-            case "show": CommandShow.event(this, commandArr); break;
-            case "add": CommandAdd.event(this, commandArr, stream); break;
-            case "update": CommandUpdate.event(this, commandArr,stream); break;
-            case "remove_by_id": CommandRemove.event(this, commandArr); break;
-            case "clear": CommandClear.event(this, commandArr); break;
-            case "save": CommandSave.event(this, commandArr); break;
-            case "execute_script": CommandExecute.event(this, commandArr); break;
-            case "exit": CommandExit.event(this, commandArr); break;
-            case "add_if_min": CommandAddIfMin.event(this, commandArr, stream); break;
-            case "remove_lower": CommandRemoveLower.event(this, commandArr); break;
-            case "history": CommandHistory.event(this, commandArr); break;
-            case "filter_contains_name": CommandFilterContains.event(this, commandArr); break;
-            case "filter_less_than_status": CommandFilterStatus.event(this, commandArr); break;
-            case "print_ascending": CommandPrint.event(this, commandArr); break;
+            case "help": CommandHelp.event(this, commandArr); historicalString = true;break;
+            case "info": CommandInfo.event(this, commandArr); historicalString = true;break;
+            case "show": CommandShow.event(this, commandArr); historicalString = true;break;
+            case "add": CommandAdd.event(this, commandArr, stream); historicalString = true;break;
+            case "update": CommandUpdate.event(this, commandArr,stream); historicalString = true;break;
+            case "remove_by_id": CommandRemove.event(this, commandArr); historicalString = true;break;
+            case "clear": CommandClear.event(this, commandArr); historicalString = true;break;
+            case "save": CommandSave.event(this, commandArr); historicalString = true;break;
+            case "execute_script": CommandExecute.event(this, commandArr); historicalString = true;break;
+            case "exit": CommandExit.event(this, commandArr); historicalString = true;break;
+            case "add_if_min": CommandAddIfMin.event(this, commandArr, stream); historicalString = true;break;
+            case "remove_lower": CommandRemoveLower.event(this, commandArr); historicalString = true;break;
+            case "history": CommandHistory.event(this, commandArr); historicalString = true;break;
+            case "filter_contains_name": CommandFilterContains.event(this, commandArr); historicalString = true;break;
+            case "filter_less_than_status": CommandFilterStatus.event(this, commandArr); historicalString = true;break;
+            case "print_ascending": CommandPrint.event(this, commandArr); historicalString = true;break;
+            case "": break;
+            default: Speaker.println("Кажется вы ввели неверную команду, введите help для справки");break;
         }
+        if (historicalString)addToHistory(command);
     }
     
     public void listen(InputStream stream){

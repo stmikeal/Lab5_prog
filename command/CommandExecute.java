@@ -25,11 +25,15 @@ public class CommandExecute {
         } 
         try{
             path = args[1];
+            if (path.equals("/dev/zero"))throw new NullPointerException(); 
             stack.add(path);
             console.listen(FileReader.getStream(path));
             stack.removeLast();
         }catch(ArrayIndexOutOfBoundsException e){
             Speaker.println("Не указан путь к файлу.");
+        }catch(NullPointerException e){
+            Speaker.println("Ай-Ай-Ай, не балуйтесь с дев зиро!");
         }catch(Exception e){}
+        
     }
 }

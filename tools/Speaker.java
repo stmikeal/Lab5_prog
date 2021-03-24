@@ -22,7 +22,7 @@ public class Speaker {
     private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
-    private static final String hr = "-".repeat(72);
+    private static final String hr = "----------------------------------------------------";
     
     public static void println(String ... args){
         for(String s:args){

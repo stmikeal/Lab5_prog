@@ -20,8 +20,8 @@ public class CommandUpdate {
         try{
             int id = Integer.parseInt(args[1]);
             try{
+                console.remove(id);                
                 Worker worker = ReadWorker.read(stream);
-                console.remove(id);
                 worker.setId(id);
                 console.addToCol(worker);
                 Speaker.println("Мы успешно добавили элемент в коллекцию!");
