@@ -81,11 +81,14 @@ public class Console {
             int day = Integer.parseInt(text.pop());
             this.createDate = LocalDate.of(year, month, day);
             int elem = Integer.parseInt(text.pop());
+            Boolean isValid = true;
             for(int i=0; i<elem;i++){
                 String name = text.pop();
                 Coordinates coordinates = new Coordinates(Double.parseDouble(text.pop()),
                     Double.parseDouble(text.pop()));
+                if(coordinates.getX()<622)isValid=false;
                 Double salary = Double.parseDouble(text.pop());
+                if(coordinates.getX()<0)isValid=false;
                 LocalDate startDate = LocalDate.of(Integer.parseInt(text.pop()), 
                         Integer.parseInt(text.pop()), Integer.parseInt(text.pop()));
                 Position position;
@@ -132,7 +135,7 @@ public class Console {
                 }else{ 
                     person = null;
                 }
-                this.addToCol(new Worker(name, coordinates, salary, startDate,
+                if (isValid)this.addToCol(new Worker(name, coordinates, salary, startDate,
                 position, status, person));
                 
             }
