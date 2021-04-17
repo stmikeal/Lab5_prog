@@ -1,16 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
-import window.Console;
+import client.Client;
 
 /**
+ * Класс-команда exit.
  *
  * @author mike
  */
 public class CommandExit {
-    public static void event(Console console, String[] args){System.exit(0);}
+
+    /**
+     * Выходит из программы.
+     *
+     * @param console
+     * @param args
+     */
+    public static void event(Client console, String[] args) {
+        System.exit(0);
+    }
 }

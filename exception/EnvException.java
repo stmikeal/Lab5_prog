@@ -6,11 +6,13 @@
 package exception;
 
 /**
+ * Исключение некорректного чтения переменной окружения.
  *
  * @author mike
  */
-public class EnvException extends RuntimeException{
-    public EnvException(String message){
+public class EnvException extends RuntimeException {
+
+    public EnvException(String message) {
         super(message);
     }
 }

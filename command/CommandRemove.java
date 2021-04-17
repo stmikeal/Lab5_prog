@@ -1,23 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
 import tools.Speaker;
-import window.Console;
+import client.Client;
 
 /**
+ * Класс-команда remove_by_id
  *
  * @author mike
  */
 public class CommandRemove {
-    public static void event(Console console, String[] args){
-        try{
+
+    /**
+     * Удаление элемента. Удаляет элемент по его id.
+     *
+     * @param console
+     * @param args
+     */
+    public static void event(Client console, String[] args) {
+        try {
             int id = Integer.parseInt(args[1]);
             console.remove(id);
-        }catch(Exception e){
+        } catch (Exception e) {
             Speaker.println("Не можем считать id.");
         }
     }

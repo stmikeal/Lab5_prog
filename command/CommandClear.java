@@ -1,18 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
-import window.Console;
+import element.Worker;
+import java.util.TreeSet;
 
 /**
+ * Класс-команда clear.
  *
  * @author mike
  */
-public class CommandClear {
-    public static void event(Console console, String[] args){
-        console.clear();
+public class CommandClear extends Command {
+
+    /**
+     * Очищает коллекцию.
+     */
+    public CommandClear(){
+        
+    }
+    
+    @Override
+    public boolean event(TreeSet<Worker> collection) {
+        try {
+            collection.clear();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

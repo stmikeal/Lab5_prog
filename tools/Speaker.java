@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tools;
+
 import java.util.Scanner;
 import java.io.InputStream;
-import java.io.IOException;
 /**
- *
+ * Класс "разговорник".
+ * Помогает красиво выводить разную информацию.
  * @author mike
  */
 public class Speaker {
@@ -24,12 +20,23 @@ public class Speaker {
     private static final String ANSI_WHITE = "\u001B[37m";
     private static final String hr = "----------------------------------------------------";
     
+    /**
+     * Вывод строк.
+     * Выводит каждый аргумент с новой строки.
+     * @param args
+     */
     public static void println(String ... args){
         for(String s:args){
             System.out.println(s);
         }
     }
    
+    /**
+     * Вывод строк.
+     * Выводит все аргументы с новой строки, с заданным цветом.
+     * @param color
+     * @param args
+     */
     public static void println(FontColor color, String ... args){
         System.out.print(color.toString());
         println(args);
@@ -50,9 +57,15 @@ public class Speaker {
         return reader.nextLine();
     }
     
+    /**
+     * Полосочка.
+     * Выводит длинную полоску для разделения информации.
+     */
     public static void hr(){System.out.println(hr);}
     
-    
+    /**
+     * Перечисление доступных цветов для текста.
+     */
     public static enum FontColor{
         BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE;
         

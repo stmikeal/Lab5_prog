@@ -1,18 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
-import window.Console;
+import client.Client;
 
 /**
+ * Класс-команда remove_lower
  *
  * @author mike
  */
 public class CommandRemoveLower {
-    public static void event(Console console, String[] args){
+
+    /**
+     * Удаляет элемент. Удаляет наименьший элемент коллекции.
+     *
+     * @param console
+     * @param args
+     */
+    public static void event(Client console, String[] args) {
         console.removeLower();
     }
 }

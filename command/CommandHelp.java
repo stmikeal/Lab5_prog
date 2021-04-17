@@ -1,17 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
-import window.Console;
+
+import client.Client;
 import tools.Speaker;
+
 /**
+ * Класс-команда help. Выводит help.
  *
  * @author mike
  */
 public class CommandHelp {
-    public static void event(Console console, String[] args){
+
+    public static void event(Client console, String[] args) {
         Speaker.hr();
         Speaker.println("help - справка по командам.",
                 "info - вывести информацию о коллекции.",
@@ -27,9 +26,9 @@ public class CommandHelp {
                 "remove_lower - удаляет из коллекции элементы меньше заданного.",
                 "history - выводит последние 14 команд.",
                 "filter_contains_name <name>- вывести элементы, имена которых"
-                        + "содержат подстроку.",
+                + "содержат подстроку.",
                 "filter_less_than_status <status>- вывести элементы, статус которых "
-                        + "меньше аргумента.",
+                + "меньше аргумента.",
                 "print_ascending - вывести элементы в порядке возрастания.");
         Speaker.hr();
     }

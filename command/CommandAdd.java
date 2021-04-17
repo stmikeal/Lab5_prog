@@ -1,29 +1,44 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
-import window.Console;
+
+import element.Worker;
+import java.io.IOException;
 import tools.Speaker;
 import tools.ReadWorker;
 import java.io.InputStream;
+import java.util.TreeSet;
+
 /**
+ * Класс-команда add.
  *
  * @author mike
  */
-public class CommandAdd {
-    public static void event(Console console, String[] args, InputStream stream){
-        if (args.length>1){
-            Speaker.println("Add не имеет дополнительных аругментов.");
-        } else {
-            try{
-                console.addToCol(ReadWorker.read(stream));
-                Speaker.println("Мы успешно добавили элемент в коллекцию!");
-                Speaker.hr();
-            }catch(Exception e){
-                Speaker.println("Не удалось добавить работника в коллекцию.");
-            }//TODO
+public class CommandAdd extends Command{
+
+    /**
+     * Интерактивный метод добавления. Получает на вход поток, с которого
+     * подаются данные работика, обрабатывает их и добавляет в коллекцию.
+     *
+     */
+    
+    private Worker worker;
+    
+    public CommandAdd(){
+        try {
+            this.worker = ReadWorker.read(System.in);
+            this.ready = true;
+        } catch(IOException e) {
+            Speaker.println(Speaker.FontColor.RED, "Не удалось добавить работника. "
+                    + "IOException thrown from <Command Add>.");
+        }
+    }
+    
+    @Override
+    public boolean event(TreeSet<Worker> collection) {
+        try {
+            collection.add(worker);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

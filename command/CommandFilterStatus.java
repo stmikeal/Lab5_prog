@@ -1,25 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
 import element.Worker;
 import tools.Speaker;
-import window.Console;
+import client.Client;
 
 /**
+ * Класс-команда filter_status.
  *
  * @author mike
  */
 public class CommandFilterStatus {
-    public static void event(Console console, String[] args){
-        try{
+
+    /**
+     * Фильтр по статусу. Выводит все элементы, у которых статус меньше
+     * заданного.
+     *
+     * @param console
+     * @param args
+     */
+    public static void event(Client console, String[] args) {
+        try {
             int index = Worker.statusToInt(args[1]);
-            if(index!=-1)console.filterStatus(index);
-            else Speaker.println("Некорректный статус.");
-        }catch(Exception e){
+            if (index != -1) {
+                console.filterStatus(index);
+            } else {
+                Speaker.println("Некорректный статус.");
+            }
+        } catch (Exception e) {
             Speaker.println("Не можем корректно считать статус.");
         }
     }

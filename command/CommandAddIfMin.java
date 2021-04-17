@@ -1,36 +1,57 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package command;
 
 import element.Worker;
 import java.io.InputStream;
 import tools.ReadWorker;
 import tools.Speaker;
-import window.Console;
+import java.io.IOException;
+import java.util.TreeSet;
 
 /**
+ * Класс-команда add_if_min.
  *
  * @author mike
  */
-public class CommandAddIfMin {
-    public static void event(Console console, String[] args, InputStream stream){
-        if (args.length>1){
-            Speaker.println("Add не имеет дополнительных аругментов.");
-        } else {
-            try{
-                Worker worker = ReadWorker.read(stream);
-                if(worker.getId()<console.first()){
-                    console.addToCol(worker);
-                    Speaker.println("Мы успешно добавили элемент в коллекцию!");
-                }
-                else Speaker.println("Элемент больше наименьшего!");
-                Speaker.hr();
-            }catch(Exception e){
-                Speaker.println("Не удалось добавить работника в коллекцию.");
-            }//TODO
+public class CommandAddIfMin extends Command{
+
+    /**
+     * Интерактивный метод добавления. Добавляет полученного из потока
+     * работника, если его id меньше всех в коллекции.
+     *
+     * @param console
+     * @param args
+     * @param stream
+     */
+    
+    private Worker worker;
+    
+    public CommandAddIfMin(InputStream stream){
+        try {
+            this.worker = ReadWorker.read(stream);
+            this.ready = true;
+        } catch(IOException e) {
+            Speaker.println(Speaker.FontColor.RED, "Не удалось добавить работника. "
+                    + "IOException thrown from <Command Add If Min>.");
+        }
+    }
+    
+    @Override
+    public boolean event(TreeSet<Worker> collection) {
+        try {
+            Integer first;
+            if (collection.isEmpty()) {
+                first = -2147483648;
+            }
+            else {
+                first = collection.first().getId();
+            }
+            if (worker.getId() < first) {
+                collection.add(worker);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

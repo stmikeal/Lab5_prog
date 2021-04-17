@@ -1,5 +1,10 @@
 package element;
 
+/**
+ * Перечисление должностей.
+ *
+ * @author mike
+ */
 public enum Position {
     DIRECTOR,
     ENGINEER,
