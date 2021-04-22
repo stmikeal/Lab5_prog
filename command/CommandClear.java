@@ -2,6 +2,7 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+import tools.Speaker;
 
 /**
  * Класс-команда clear.
@@ -13,17 +14,21 @@ public class CommandClear extends Command {
     /**
      * Очищает коллекцию.
      */
-    public CommandClear(){
-        
+    public CommandClear(String ... args){
+        this.ready = true;
     }
     
     @Override
-    public boolean event(TreeSet<Worker> collection) {
+    public Speaker event(TreeSet<Worker> collection) {
         try {
             collection.clear();
-            return true;
+            speaker = new Speaker("Мы очистили коллекцию!");
+            speaker.success();
+            return speaker;
         } catch (Exception e) {
-            return false;
+            speaker = new Speaker("Мы не смогли очистить коллекцию!");
+            speaker.error();
+            return speaker;
         }
     }
 }

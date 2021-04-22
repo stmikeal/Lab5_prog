@@ -25,9 +25,9 @@ public class CommandAddIfMin extends Command{
     
     private Worker worker;
     
-    public CommandAddIfMin(InputStream stream){
+    public CommandAddIfMin(String ... args){
         try {
-            this.worker = ReadWorker.read(stream);
+            this.worker = ReadWorker.read(System.in);
             this.ready = true;
         } catch(IOException e) {
             Speaker.println(Speaker.FontColor.RED, "Не удалось добавить работника. "
@@ -36,7 +36,7 @@ public class CommandAddIfMin extends Command{
     }
     
     @Override
-    public boolean event(TreeSet<Worker> collection) {
+    public Speaker event(TreeSet<Worker> collection) {
         try {
             Integer first;
             if (collection.isEmpty()) {
@@ -47,11 +47,16 @@ public class CommandAddIfMin extends Command{
             }
             if (worker.getId() < first) {
                 collection.add(worker);
-                return true;
+                speaker = new Speaker("Мы добавили элемент в коллекцию!");
+                speaker.success();
+                return speaker;
             }
-            return false;
+            speaker = new Speaker("Мы не добавили элемент в коллекцию.");
+            return speaker;
         } catch (Exception e) {
-            return false;
+            speaker = new Speaker("Мы не смогли добавить элемент в коллекцию.");
+            speaker.error();
+            return speaker;
         }
     }
 }

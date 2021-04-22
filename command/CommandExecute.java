@@ -2,17 +2,22 @@ package command;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.NoSuchElementException;
-import tools.FileReader;
+import element.Worker;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import tools.CommandParser;
 import tools.Speaker;
-import client.Client;
 
 /**
  * Класс-команда execute_script.
  *
  * @author mike
  */
-public class CommandExecute {
+public class CommandExecute extends Command{
 
     static Deque<String> stack = new ArrayDeque<>();
 
@@ -22,23 +27,54 @@ public class CommandExecute {
      * @param console
      * @param args
      */
-    public static void event(Client console, String[] args) {
-        String path;
-        if (stack.contains(args[1])) {
-            System.err.println("Ошибка. Один или несколько скриптов зациклены.");
-            return;
+    
+    private String path = "";
+    private String next;
+    
+    public CommandExecute(String ... args){
+        try {
+            next = args[1];
+            this.ready = true;
+        } catch(Exception e) {
+            this.ready = false;
+        }
+        
+    }
+    
+    @Override
+    public Speaker event(TreeSet<Worker> collection) throws ExecutionException {
+        if (stack.contains(next)) {
+            speaker = new Speaker("Произошло зацикливание!");
+            speaker.error();
+            return speaker;
         }
         try {
-            path = args[1];
+            
+            path = (new File(next)).getAbsolutePath();
             if (path.substring(0, 4).equals("/dev")) throw new NullPointerException();
             stack.add(path);
-            console.listen(FileReader.getStream(path));
+            
+            File purpose = new File(path);
+            if (!purpose.exists()) {
+                throw new FileNotFoundException("");
+            }
+            if (purpose.isDirectory()) {
+                throw new FileNotFoundException();
+            }
+            FileInputStream inputContainer = new FileInputStream(purpose);
+            
+            CommandParser cp = new CommandParser();
+            cp.listen(new BufferedInputStream(inputContainer), collection);
             stack.removeLast();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Speaker.println("Не указан путь к файлу.");
-        } catch (NullPointerException e) {
-            Speaker.println("Введите нормальный файл!");
-        } catch (Exception e) {
+            
+            speaker = new Speaker("Удалось прочитать скрипт " + path);
+            speaker.success();
+            return speaker;
+            
+        } catch (ArrayIndexOutOfBoundsException | FileNotFoundException e) {
+            speaker = new Speaker("Не удалось прочитать скрипт " + path);
+            speaker.error();
+            return speaker;
         }
 
     }

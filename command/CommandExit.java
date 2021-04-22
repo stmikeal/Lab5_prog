@@ -1,21 +1,28 @@
 package command;
 
-import client.Client;
+import element.Worker;
+import java.util.TreeSet;
+import tools.Speaker;
 
 /**
  * Класс-команда exit.
  *
  * @author mike
  */
-public class CommandExit {
+public class CommandExit extends Command{
 
     /**
      * Выходит из программы.
      *
-     * @param console
-     * @param args
+     * @param collection
+     * @return 
      */
-    public static void event(Client console, String[] args) {
-        System.exit(0);
+    public CommandExit(String ... args){
+        this.ready = true;
+    }
+    
+    @Override
+    public Speaker event(TreeSet<Worker> collection) {
+        return new Speaker("exit");
     }
 }

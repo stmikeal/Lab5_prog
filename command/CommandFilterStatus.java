@@ -2,14 +2,14 @@ package command;
 
 import element.Worker;
 import tools.Speaker;
-import client.Client;
+import java.util.TreeSet;
 
 /**
  * Класс-команда filter_status.
  *
  * @author mike
  */
-public class CommandFilterStatus {
+public class CommandFilterStatus extends Command{
 
     /**
      * Фильтр по статусу. Выводит все элементы, у которых статус меньше
@@ -18,16 +18,29 @@ public class CommandFilterStatus {
      * @param console
      * @param args
      */
-    public static void event(Client console, String[] args) {
+    
+    private int status;
+    
+    public CommandFilterStatus(String ... args) {
         try {
-            int index = Worker.statusToInt(args[1]);
-            if (index != -1) {
-                console.filterStatus(index);
-            } else {
-                Speaker.println("Некорректный статус.");
-            }
-        } catch (Exception e) {
-            Speaker.println("Не можем корректно считать статус.");
+            status = Integer.parseInt(args[1]);
+            ready = true;
+        } catch(NumberFormatException e) {
+            ready = false;
         }
+    }
+    
+    @Override
+    public Speaker event(TreeSet<Worker> collection) {
+        String result = "---";
+        for(Worker elem:collection){
+            if(elem.statusToInt()<status){
+                result += elem.toString() + "\n";
+                result += "---\n";
+            }
+        }
+        result = result.trim();
+        speaker = new Speaker(result);
+        return speaker;
     }
 }

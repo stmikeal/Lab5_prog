@@ -2,25 +2,28 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import tools.Speaker;
 
 /**
  * Абстрактный класс команды.
+ *
  * @author mike
  */
 public abstract class Command {
-    
+
     boolean ready;
+    Speaker speaker;
     
-    public Command(){
+    public Command(String... args) {
         ready = false;
     }
-    public boolean event(){
-        return false;
+
+    public Speaker event(TreeSet<Worker> collection) throws ExecutionException {
+        return null;
     }
-    public boolean event(TreeSet<Worker> collection){
-        return false;
-    }
-    public boolean isReady(){
+
+    public boolean isReady() {
         return ready;
     }
 }

@@ -19,6 +19,7 @@ public class Speaker {
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
     private static final String hr = "----------------------------------------------------";
+    private String message;
     
     /**
      * Вывод строк.
@@ -29,6 +30,26 @@ public class Speaker {
         for(String s:args){
             System.out.println(s);
         }
+    }
+    
+    public void println(){
+        System.out.println(this.message);
+    }
+    
+    public void error(){
+        message = ANSI_RED + message + ANSI_RESET;
+    }
+    
+    public void success() {
+        message = ANSI_GREEN + message + ANSI_RESET;
+    }
+    
+    public Speaker(String ... args){
+        this.message = "";
+        for(String arg:args){
+            message += arg + "\n";
+        }
+        message.trim();
     }
    
     /**

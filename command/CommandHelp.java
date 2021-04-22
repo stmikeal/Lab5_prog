@@ -1,6 +1,7 @@
 package command;
 
-import client.Client;
+import element.Worker;
+import java.util.TreeSet;
 import tools.Speaker;
 
 /**
@@ -8,11 +9,14 @@ import tools.Speaker;
  *
  * @author mike
  */
-public class CommandHelp {
+public class CommandHelp extends Command{
+    
+    public CommandHelp(String ... args) {
+        ready = true;
+    }
 
-    public static void event(Client console, String[] args) {
-        Speaker.hr();
-        Speaker.println("help - справка по командам.",
+    public Speaker event(TreeSet<Worker> collection) {
+        return new Speaker("help - справка по командам.",
                 "info - вывести информацию о коллекции.",
                 "show - вывести все элементы коллекции.",
                 "add - добавляет элемент в коллекцию.",
@@ -30,6 +34,5 @@ public class CommandHelp {
                 "filter_less_than_status <status>- вывести элементы, статус которых "
                 + "меньше аргумента.",
                 "print_ascending - вывести элементы в порядке возрастания.");
-        Speaker.hr();
     }
 }
