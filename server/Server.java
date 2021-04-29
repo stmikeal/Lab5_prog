@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -36,7 +35,6 @@ public class Server {
     
     private static int PORT;
     private static String PATH;
-    private static LinkedList<SocketAdapter> socketList = new LinkedList<>();
     static TreeSet<Worker> collection;
     private static LocalDate createDate = LocalDate.now();
     
@@ -47,6 +45,20 @@ public class Server {
     }
     
     public static void main(String[] args) throws IOException{
+        
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(
+                        () -> {
+                            try {
+                                Thread.sleep(200);
+                                System.out.println("Выключаем сервер ...");
+                                save();
+                            } catch(InterruptedException e) {
+                                System.out.println("Не удалось сохранить коллекцию");
+                            }
+                        }
+                )
+        );
         
         /*
         Блок чтения из переменной окружения.
@@ -59,6 +71,7 @@ public class Server {
             System.out.println("Неудачно загружена переменная среды, загружаем значение по умолчанию.");
             PATH = "data";
         }
+        System.out.println(PATH);
         load();
         
         /*
@@ -66,11 +79,17 @@ public class Server {
         При неудачном чтении выставляется значение по умолчанию.
         */
         try {
-            System.out.println("Введите порт для подключения: ");
-            PORT = Integer.parseInt(new Scanner(System.in).next());
-        } catch(NumberFormatException e) {
-            System.out.println("Ошибка чтение порта, загружено значение по умолчанию - 42.");
             PORT = 4242;
+            System.out.println("Введите порт для подключения: ");
+            PORT = Integer.parseInt(new Scanner(System.in).nextLine());
+            if (PORT<=1024){
+                throw new NumberFormatException();
+            }
+        } catch(NumberFormatException e) {
+            System.out.println("Ошибка чтение порта, загружено значение по умолчанию - 4242.");
+        } catch(NoSuchElementException e) {
+            System.out.println("Зачем вы ломаете программу?! Ни мучий, апути.");
+            System.out.println("Устанавливаем значение по умолчанию - 4242.");
         }
         
         
@@ -92,10 +111,12 @@ public class Server {
         try {
             while(true) {
                 Socket socket = server.accept();
+            
                 try {
-                    socketList.add(new SocketAdapter(socket));
+                    SocketAdapter adapter = new SocketAdapter(socket);
+                    System.out.println("Мы начали общение с пользователем: " + socket.getInetAddress().toString());
                 } catch(IOException e) {
-                    System.out.println("Мы не смогли конкретно начать общение с пользователем.");
+                    System.out.println("Мы не смогли корректно начать общение с пользователем.");
                     socket.close();
                 }
             }
@@ -111,9 +132,14 @@ public class Server {
     
     
     
-    private static void load() throws NoSuchElementException {
+    private static void load(){
         
         try(BufferedInputStream reader = FileReader.getStream(PATH)) {
+            if (PATH.length() > 4) {
+                if (PATH.substring(0, 4).equals("/dev")) { 
+                    throw new NullPointerException();
+                }
+            }
             Scanner scanner = new Scanner(reader);
             Deque<String> text = new ArrayDeque<>();
             String[] elements;
@@ -198,7 +224,7 @@ public class Server {
             }
             System.out.println("Коллекция прочитана корректно");
             reader.close();
-        } catch(IOException e) {
+        } catch(IOException | NoSuchElementException e) {
             System.out.println("Не удалось открыть или создать файл.\n" +
                    "Попробуйте изменить путь в переменной окружения.");
         } catch (NumberFormatException e) {
@@ -211,7 +237,7 @@ public class Server {
     /**
      * Метод сохраняющий коллекцию в файл.
      */
-    public void save(){ 
+    public static void save(){ 
         try(OutputStreamWriter writer = new OutputStreamWriter(
                     new FileOutputStream(new File(PATH)))) {
             if (PATH.substring(0, 4).equals("/dev")) throw new NoSuchElementException();

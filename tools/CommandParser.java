@@ -33,9 +33,9 @@ public class CommandParser {
         catch(NullPointerException e) {
             return null;
         }
-        Invoker invoker = new Invoker(commandArr);
+        Invoker invoker = new Invoker();
         if (invoker.contains(command)) {
-            return invoker.invoke();
+            return invoker.invoke(commandArr);
         } else {
             return null;
         }

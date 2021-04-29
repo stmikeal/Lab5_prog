@@ -51,7 +51,11 @@ public class CommandExecute extends Command{
         try {
             
             path = (new File(next)).getAbsolutePath();
-            if (path.substring(0, 4).equals("/dev")) throw new NullPointerException();
+            if (path.length() > 4) {
+                if (path.substring(0, 4).equals("/dev")) { 
+                    throw new NullPointerException();
+                }
+            }
             stack.add(path);
             
             File purpose = new File(path);

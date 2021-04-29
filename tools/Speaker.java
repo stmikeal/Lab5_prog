@@ -2,12 +2,13 @@ package tools;
 
 import java.util.Scanner;
 import java.io.InputStream;
+import java.io.Serializable;
 /**
  * Класс "разговорник".
  * Помогает красиво выводить разную информацию.
  * @author mike
  */
-public class Speaker {
+public class Speaker implements Serializable {
     private static final Scanner scanner = new Scanner(System.in);
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
@@ -21,6 +22,10 @@ public class Speaker {
     private static final String hr = "----------------------------------------------------";
     private String message;
     
+    
+    public String getMessage() {
+        return this.message;
+    }
     /**
      * Вывод строк.
      * Выводит каждый аргумент с новой строки.
@@ -33,7 +38,9 @@ public class Speaker {
     }
     
     public void println(){
-        System.out.println(this.message);
+        hr();
+        System.out.print(this.message);
+        hr();
     }
     
     public void error(){
@@ -49,7 +56,6 @@ public class Speaker {
         for(String arg:args){
             message += arg + "\n";
         }
-        message.trim();
     }
    
     /**
@@ -87,7 +93,7 @@ public class Speaker {
     /**
      * Перечисление доступных цветов для текста.
      */
-    public static enum FontColor{
+    public static enum FontColor implements Serializable{
         BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE;
         
         @Override

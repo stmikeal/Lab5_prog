@@ -1,6 +1,7 @@
 package command;
 
 import element.Worker;
+import java.io.Serializable;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import tools.Speaker;
@@ -10,13 +11,13 @@ import tools.Speaker;
  *
  * @author mike
  */
-public abstract class Command {
+public abstract class Command  implements Serializable{
 
-    boolean ready;
+    boolean ready = false;
     Speaker speaker;
     
     public Command(String... args) {
-        ready = false;
+        ready = true;
     }
 
     public Speaker event(TreeSet<Worker> collection) throws ExecutionException {
@@ -25,5 +26,9 @@ public abstract class Command {
 
     public boolean isReady() {
         return ready;
+    }
+    
+    public void setDone() {
+        this.ready = false;
     }
 }

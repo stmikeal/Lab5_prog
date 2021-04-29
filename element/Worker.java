@@ -1,4 +1,5 @@
 package element;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -6,7 +7,7 @@ import java.time.LocalDate;
  * Класс работника, составлен из варианта лабораторной работы.
  * @author mike
  */
-public class Worker {
+public class Worker implements Serializable {
     private Integer id;
     private String name;
     private Coordinates coordinates;

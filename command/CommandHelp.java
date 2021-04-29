@@ -15,6 +15,7 @@ public class CommandHelp extends Command{
         ready = true;
     }
 
+    @Override
     public Speaker event(TreeSet<Worker> collection) {
         return new Speaker("help - справка по командам.",
                 "info - вывести информацию о коллекции.",
@@ -23,12 +24,10 @@ public class CommandHelp extends Command{
                 "update <id> - обновить элемент коллекции по id.",
                 "remove_by_id <id> - удаляет элемент коллекции по id.",
                 "clear - очищает коллекцию.",
-                "save - сохранить коллекцию в файл.",
                 "execute_script <path> - выполняет скрипт в файле.",
                 "exit - завершает программу(без сохранения)",
                 "add_if_min - добавляет элемент, если его значение наименьшее.",
                 "remove_lower - удаляет из коллекции элементы меньше заданного.",
-                "history - выводит последние 14 команд.",
                 "filter_contains_name <name>- вывести элементы, имена которых"
                 + "содержат подстроку.",
                 "filter_less_than_status <status>- вывести элементы, статус которых "

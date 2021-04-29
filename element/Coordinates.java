@@ -1,11 +1,13 @@
 package element;
 
+import java.io.Serializable;
+
 /**
  * Класс с координатами.
  *
  * @author mike
  */
-public class Coordinates {
+public class Coordinates implements Serializable {
 
     private double x; //Значение поля должно быть больше -623
     private double y;

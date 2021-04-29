@@ -1,11 +1,13 @@
 package element;
 
+import java.io.Serializable;
+
 /**
  * Класс личных данных. Хранит внешние данные работника.
  *
  * @author mike
  */
-public class Person {
+public class Person implements Serializable {
 
     private Integer height; //Поле не может быть null, Значение поля должно быть больше 0
     private Color eyeColor; //Поле не может быть null
