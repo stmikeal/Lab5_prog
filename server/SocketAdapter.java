@@ -5,7 +5,7 @@ import command.Command;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import tools.Speaker;
 
@@ -16,8 +16,8 @@ import tools.Speaker;
 public class SocketAdapter implements Runnable{
     
     private Socket socket;
+    private InetAddress address;
     private ObjectInputStream inStream;
-    OutputStream clientOutStream;
     private ObjectOutputStream outStream;
     private Thread thread;
     private String clientAddress;
@@ -28,12 +28,8 @@ public class SocketAdapter implements Runnable{
         Запоминаем сокет, открываем потоки ввода-вывода, запускаем новый поток.
         */
         this.socket = socket;
-        clientAddress = socket.getInetAddress().toString(); 
-        clientOutStream = socket.getOutputStream();
-        clientOutStream.flush();
-        outStream = new ObjectOutputStream(clientOutStream);
-        outStream.flush();
-        inStream = new ObjectInputStream(socket.getInputStream());
+        address = socket.getInetAddress();
+        clientAddress = socket.getInetAddress().toString();
         thread = new Thread(this);
         thread.start();
     }
@@ -46,8 +42,11 @@ public class SocketAdapter implements Runnable{
         Иначе отправляем стандартный ответ об ошибке.
         */
         Speaker message;
-        while (thread != null){
+        //while (thread != null){
             try {
+                outStream = new ObjectOutputStream(socket.getOutputStream());
+                outStream.flush();
+                inStream = new ObjectInputStream(socket.getInputStream());
                 Command command = (Command) inStream.readObject();
                 Executor executor = new Executor(command);
                 message = executor.execute();
@@ -59,20 +58,17 @@ public class SocketAdapter implements Runnable{
                 message = new Speaker("Извините, но у нас возникла проблема с отправкой команды.");
                 message.error();
             }
-            /*try {
+            try {
                 outStream.writeObject((Object)message);
             } catch(IOException e) {
                 System.out.println("Поток " + clientAddress + ": не удалось отправить ответ пользователю");
-            }*/
-            try {
-                clientOutStream.flush();
-                outStream = new ObjectOutputStream(this.clientOutStream);
+            }
+            /*try {
                 outStream.flush();
-                outStream.writeObject((Object)message);
             } catch(IOException e) {
                 System.out.println("Пользователь " + clientAddress + " отключился вне штатного режима.");
                 thread = null;
-            }
-        }
+            }*/
+        //}
     }
 }
