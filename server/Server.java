@@ -1,12 +1,6 @@
 package server;
 
-import element.Color;
-import element.Coordinates;
-import element.Country;
-import element.Person;
-import element.Position;
-import element.Status;
-import element.Worker;
+import element.*;
 import exception.EnvException;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -22,9 +16,8 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.TreeSet;
-import tools.EnvReader;
-import tools.FileReader;
-import tools.Speaker;
+import java.util.logging.Level;
+import tools.*;
 
 /**
  * Класс сервера.
@@ -35,7 +28,7 @@ public class Server {
     
     private static int PORT;
     private static String PATH;
-    static TreeSet<Worker> collection;
+    static TreeSet<Worker> collection = new TreeSet<Worker>();
     private static LocalDate createDate = LocalDate.now();
     
     static {
@@ -44,6 +37,8 @@ public class Server {
         collection = new TreeSet(comparator);
     }
     
+    
+    
     public static void main(String[] args) throws IOException{
         
         Runtime.getRuntime().addShutdownHook(
@@ -51,10 +46,12 @@ public class Server {
                         () -> {
                             try {
                                 Thread.sleep(200);
-                                System.out.println("Выключаем сервер ...");
+                                ServerLogger.logger.log(Level.INFO, "Выключение сервера");
+                                System.out.println("\nВыключаем сервер ...");
                                 save();
                             } catch(InterruptedException e) {
-                                System.out.println("Не удалось сохранить коллекцию");
+                                ServerLogger.logger.log(Level.INFO, "Мы даже выключить нормально не смогли");
+                                System.out.println("\nНе удалось сохранить коллекцию");
                             }
                         }
                 )
@@ -68,10 +65,10 @@ public class Server {
         try {
             PATH = EnvReader.getenv("LAB_PATH");
         } catch(EnvException e) {
+            ServerLogger.logger.log(Level.WARNING,"Ошибка чтения переменной среды", e);
             System.out.println("Неудачно загружена переменная среды, загружаем значение по умолчанию.");
             PATH = "data";
         }
-        System.out.println(PATH);
         load();
         
         /*
@@ -86,8 +83,10 @@ public class Server {
                 throw new NumberFormatException();
             }
         } catch(NumberFormatException e) {
+            ServerLogger.logger.log(Level.WARNING,"Введено некорректное значение порта", e);
             System.out.println("Ошибка чтение порта, загружено значение по умолчанию - 4242.");
         } catch(NoSuchElementException e) {
+            ServerLogger.logger.log(Level.WARNING,"Введен некорректный символ при чтении порта", e);
             System.out.println("Зачем вы ломаете программу?! Ни мучий, апути.");
             System.out.println("Устанавливаем значение по умолчанию - 4242.");
         }
@@ -100,6 +99,7 @@ public class Server {
         try {
             server = new ServerSocket(PORT);
         } catch(IOException e) {
+            ServerLogger.logger.log(Level.WARNING,"Сокет не был запущен", e);
             System.out.println("Проблема с запуском сервера, проверьте настройки...");
             System.exit(1337);
         }
@@ -111,15 +111,21 @@ public class Server {
         try {
             while(true) {
                 Socket socket = server.accept();
-            
+         
                 try {
                     SocketAdapter adapter = new SocketAdapter(socket);
-                    System.out.println("Мы начали общение с пользователем: " + socket.getInetAddress().toString());
+                    ServerLogger.logger.log(Level.INFO, "Запущен адаптер для " + 
+                            socket.getInetAddress().toString());
                 } catch(IOException e) {
-                    System.out.println("Мы не смогли корректно начать общение с пользователем.");
+                    ServerLogger.logger.log(Level.WARNING,"Не был запущен адаптер", e);
+                    System.out.println("Соединение было прервано. Пользователь: " 
+                            + socket.getInetAddress().toString());
                     socket.close();
                 }
             }
+        } catch(IOException e) {
+            System.out.println("Сервер умер, сори");
+            ServerLogger.logger.log(Level.WARNING,"Прервано прослушивание подключений", e);
         } finally {
             server.close();
         }
@@ -129,14 +135,12 @@ public class Server {
         return createDate;
     }
     
-    
-    
-    
     private static void load(){
         
         try(BufferedInputStream reader = FileReader.getStream(PATH)) {
             if (PATH.length() > 4) {
                 if (PATH.substring(0, 4).equals("/dev")) { 
+                    ServerLogger.logger.log(Level.WARNING,"Файл из переменной окружения - устройство");
                     throw new NullPointerException();
                 }
             }
@@ -159,13 +163,13 @@ public class Server {
             int elem = Integer.parseInt(text.pop());
             Boolean isValid = true;
             
-            for(int i=0; i<elem;i++) {
+            for(int i=0; i<elem; i++) {
                 String name = text.pop();
                 Coordinates coordinates = new Coordinates(Double.parseDouble(text.pop()),
                     Double.parseDouble(text.pop()));
-                if (coordinates.getX()<622) isValid=false;
+                if (coordinates.getX() < -622) isValid=false;
                 Double salary = Double.parseDouble(text.pop());
-                if (coordinates.getX()<0) isValid=false;
+                if (salary < 0) isValid=false;
                 LocalDate startDate = LocalDate.of(Integer.parseInt(text.pop()), 
                         Integer.parseInt(text.pop()), Integer.parseInt(text.pop()));
                 
@@ -222,14 +226,18 @@ public class Server {
                 }
                 
             }
+            ServerLogger.logger.log(Level.INFO, "Смогли прочитать коллекцию из файла");
             System.out.println("Коллекция прочитана корректно");
             reader.close();
         } catch(IOException | NoSuchElementException e) {
+            ServerLogger.logger.log(Level.WARNING,"Не удалось открыть или создать файл", e);
             System.out.println("Не удалось открыть или создать файл.\n" +
                    "Попробуйте изменить путь в переменной окружения.");
         } catch (NumberFormatException e) {
+            ServerLogger.logger.log(Level.WARNING,"Число не верно прочитано", e);
             System.out.println("Не удалось прочитать число.");
         } catch (java.time.DateTimeException e) {
+            ServerLogger.logger.log(Level.WARNING,"Неверный формат даты", e);
             System.out.println("Неверный формат даты");
         }
     }
@@ -250,6 +258,7 @@ public class Server {
             }
             writer.close();
         } catch(Exception e) {
+            ServerLogger.logger.log(Level.WARNING,"Не удалось сохранить коллекцию", e);
             Speaker.println("Не удалось корректно сохранить коллекцию.");
         }
     }
