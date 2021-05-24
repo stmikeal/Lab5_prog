@@ -2,7 +2,6 @@ package command;
 
 import element.Worker;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.TreeSet;
 import tools.ReadWorker;
 import tools.Speaker;

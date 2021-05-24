@@ -20,6 +20,7 @@ public class CommandRemove extends Command{
      */
     
     private int id;
+    private Worker compared = null; 
     
     public CommandRemove(String ... args) {
         ready = true;
@@ -31,9 +32,9 @@ public class CommandRemove extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
-        Worker compared = collection.floor(new Worker(id)); 
-        if(id == compared.getId()) {
+    public Speaker event(TreeSet<Worker> collection) {    
+        collection.stream().filter(worker -> worker.getId()==id).forEach(worker -> compared = worker);
+        if(compared!=null) {
             collection.remove(compared);
             speaker = new Speaker("Элемент удачно удален.");
             speaker.success();

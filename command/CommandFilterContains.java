@@ -20,6 +20,7 @@ public class CommandFilterContains extends Command{
      */
     
     private String name;
+    private String result = "---\n";
     
     public CommandFilterContains(String ... args) {
         ready = true;
@@ -28,13 +29,7 @@ public class CommandFilterContains extends Command{
     
     @Override
     public Speaker event(TreeSet<Worker> collection) {
-        String result = "---\n";
-        for(Worker elem:collection){
-            if(Pattern.matches(".*"+name+".*", elem.getName())){
-                result += elem.toString()+"\n";
-                result += "---\n";
-            }
-        }
+        collection.stream().filter(worker -> Pattern.matches(".*"+name+".*", worker.getName())).forEach(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         speaker = new Speaker(result);
         return speaker;

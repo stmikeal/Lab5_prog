@@ -27,7 +27,7 @@ public class Client {
     private ObjectOutputStream outStream;
     private int PORT;
     private Speaker speaker;
-    private final int REP = 5;
+    private final int REP = 20;
     private final InetSocketAddress address;
     
     static {
@@ -126,7 +126,6 @@ public class Client {
         }
         if (stack > 0) {
             ClientLogger.logger.log(Level.INFO, "Попытка подключения номер " + stack);
-            System.out.println("Попытка подключения номер " + stack);
         }
         try {
             this.connect();
@@ -135,7 +134,6 @@ public class Client {
             tempSpeaker = read();
         } catch(IOException e) {
             ClientLogger.logger.log(Level.INFO, "Неудачная попытка подключения номер " + stack);
-            System.out.println("Неудачная попытка подключения...");
             return execute(command, stack + 1);
         }
         return tempSpeaker;

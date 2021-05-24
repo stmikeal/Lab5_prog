@@ -20,6 +20,7 @@ public class CommandFilterStatus extends Command{
      */
     
     private int status;
+    private String result = "---";
     
     public CommandFilterStatus(String ... args) {
         try {
@@ -32,13 +33,7 @@ public class CommandFilterStatus extends Command{
     
     @Override
     public Speaker event(TreeSet<Worker> collection) {
-        String result = "---";
-        for(Worker elem:collection){
-            if(elem.statusToInt()<status){
-                result += elem.toString() + "\n";
-                result += "---\n";
-            }
-        }
+        collection.stream().filter(worker -> worker.statusToInt()<status).forEach(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         speaker = new Speaker(result);
         return speaker;

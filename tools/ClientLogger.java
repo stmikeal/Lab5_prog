@@ -2,15 +2,17 @@ package tools;
 
 import java.io.FileInputStream;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class ClientLogger {
-    public static java.util.logging.Logger logger;
+    public static Logger logger = Logger.getLogger(ServerLogger.class.getName());;
     static {
-        try(FileInputStream ins = new FileInputStream("log.config")){ 
+        try(FileInputStream ins = new FileInputStream("../log.config")){ 
             LogManager.getLogManager().readConfiguration(ins);
             logger = java.util.logging.Logger.getLogger(ServerLogger.class.getName());
         }catch (Exception ignore){
-            ignore.printStackTrace();
+            System.out.println("Конфигурация логгера не обнаружена."
+                    + "\nЛоггирование будет выводиться в стандартный поток вывода.");
         }
     }
 }

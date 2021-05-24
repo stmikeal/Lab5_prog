@@ -6,13 +6,14 @@ import java.util.logging.Logger;
 
 public class ServerLogger {
    
-    public static Logger logger;
+    public static Logger logger = Logger.getLogger(ServerLogger.class.getName());
     static {
-        try(FileInputStream ins = new FileInputStream("log.config")){ 
+        try(FileInputStream ins = new FileInputStream("../log.config")){ 
             LogManager.getLogManager().readConfiguration(ins);
             logger = Logger.getLogger(ServerLogger.class.getName());
         }catch (Exception ignore){
-            ignore.printStackTrace();
-        }
+            System.out.println("Конфигурация логгера не обнаружена."
+                    + "\nЛоггирование будет выводиться в стандартный поток вывода.");
+        } 
     }
 }

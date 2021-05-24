@@ -39,7 +39,7 @@ public class Server {
     
     
     
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, ClassNotFoundException{
         
         Runtime.getRuntime().addShutdownHook(
                 new Thread(
@@ -57,6 +57,7 @@ public class Server {
                 )
         );
         
+        Class.forName("org.postgresql.Driver");
         /*
         Блок чтения из переменной окружения.
         При неудачной попытке выставляем значение по умолчанию.
@@ -105,7 +106,7 @@ public class Server {
         }
         
         /*
-        Ждем пока поступит запрос на подключение.
+        Ждем пока поступит запрос на подключение.   
         Когда приходит подключение, запускаем поток, начинаем работу с юзером.
         */
         try {
@@ -136,7 +137,9 @@ public class Server {
     }
     
     private static void load(){
-        
+        Deque<String> text = new ArrayDeque<>();
+        String[] elements;
+        int size = 0;
         try(BufferedInputStream reader = FileReader.getStream(PATH)) {
             if (PATH.length() > 4) {
                 if (PATH.substring(0, 4).equals("/dev")) { 
@@ -145,8 +148,6 @@ public class Server {
                 }
             }
             Scanner scanner = new Scanner(reader);
-            Deque<String> text = new ArrayDeque<>();
-            String[] elements;
             
             while(scanner.hasNext()) {
                 elements = scanner.nextLine().trim().split(",");
@@ -155,6 +156,7 @@ public class Server {
                     if (!newElem.equals("")) text.add(newElem);
                 }
             }
+            size = text.size();
             
             int year = Integer.parseInt(text.pop());
             int month = Integer.parseInt(text.pop());
@@ -164,81 +166,92 @@ public class Server {
             Boolean isValid = true;
             
             for(int i=0; i<elem; i++) {
-                String name = text.pop();
-                Coordinates coordinates = new Coordinates(Double.parseDouble(text.pop()),
-                    Double.parseDouble(text.pop()));
-                if (coordinates.getX() < -622) isValid=false;
-                Double salary = Double.parseDouble(text.pop());
-                if (salary < 0) isValid=false;
-                LocalDate startDate = LocalDate.of(Integer.parseInt(text.pop()), 
-                        Integer.parseInt(text.pop()), Integer.parseInt(text.pop()));
-                
-                Position position;
-                switch(text.pop()) {
-                    case "DIRECTOR": position = Position.DIRECTOR; break;
-                    case "ENGINEER": position = Position.ENGINEER; break;
-                    case "HEAD_OF_DIVISION": position = Position.HEAD_OF_DIVISION; break;
-                    default: position = null;
-                }
-                
-                Status status;
-                switch(text.pop()) {
-                    case "FIRED": status = Status.FIRED; break;
-                    case "RECOMMENDED_FOR_PROMOTION": status = Status.RECOMMENDED_FOR_PROMOTION; break;
-                    case "REGULAR": status = Status.REGULAR; break;
-                    default: status = null;
-                }
-                
-                Person person;
-                if (text.pop().equals("y")) {
-                    int height = Integer.parseInt(text.pop());
-                    Color eye;
+                try{
+                    String name = text.pop();
+                    Coordinates coordinates = new Coordinates(Double.parseDouble(text.pop()),
+                        Double.parseDouble(text.pop()));
+                    if (coordinates.getX() < -622) throw new NumberFormatException();
+                    Double salary = Double.parseDouble(text.pop());
+                    if (salary < 0) throw new NumberFormatException();
+                    LocalDate startDate = LocalDate.of(Integer.parseInt(text.pop()), 
+                            Integer.parseInt(text.pop()), Integer.parseInt(text.pop()));
+
+                    Position position;
                     switch(text.pop()) {
-                        case "BLUE": eye = Color.BLUE; break;
-                        case "GREEN": eye = Color.GREEN; break;
-                        case "ORANGE": eye = Color.ORANGE; break;
-                        case "WHITE": eye = Color.WHITE; break;
-                        default: eye = null;
+                        case "DIRECTOR": position = Position.DIRECTOR; break;
+                        case "ENGINEER": position = Position.ENGINEER; break;
+                        case "HEAD_OF_DIVISION": position = Position.HEAD_OF_DIVISION; break;
+                        default: position = null;
                     }
-                    Color hair;
+
+                    Status status;
                     switch(text.pop()) {
-                        case "YELLOW": hair = Color.YELLOW; break;
-                        case "BROWN": hair = Color.BROWN; break;
-                        case "WHITE": hair = Color.WHITE; break;
-                        default: hair = null;
+                        case "FIRED": status = Status.FIRED; break;
+                        case "RECOMMENDED_FOR_PROMOTION": status = Status.RECOMMENDED_FOR_PROMOTION; break;
+                        case "REGULAR": status = Status.REGULAR; break;
+                        default: status = null;
                     }
-                    Country nation;
-                    switch(text.pop()) {
-                        case "RUSSIA": nation = Country.RUSSIA; break;
-                        case "UNITED_KINGDOM": nation = Country.UNITED_KINGDOM; break;
-                        case "GERMANY": nation = Country.GERMANY; break;
-                        case "ITALY": nation = Country.ITALY; break;
-                        default: nation = null;
+
+                    Person person;
+                    if (text.pop().equals("y")) {
+                        int height = Integer.parseInt(text.pop());
+                        Color eye;
+                        switch(text.pop()) {
+                            case "BLUE": eye = Color.BLUE; break;
+                            case "GREEN": eye = Color.GREEN; break;
+                            case "ORANGE": eye = Color.ORANGE; break;
+                            case "WHITE": eye = Color.WHITE; break;
+                            default: eye = null;
+                        }
+                        Color hair;
+                        switch(text.pop()) {
+                            case "YELLOW": hair = Color.YELLOW; break;
+                            case "BROWN": hair = Color.BROWN; break;
+                            case "WHITE": hair = Color.WHITE; break;
+                            default: hair = null;
+                        }
+                        Country nation;
+                        switch(text.pop()) {
+                            case "RUSSIA": nation = Country.RUSSIA; break;
+                            case "UNITED_KINGDOM": nation = Country.UNITED_KINGDOM; break;
+                            case "GERMANY": nation = Country.GERMANY; break;
+                            case "ITALY": nation = Country.ITALY; break;
+                            default: nation = null;
+                        }
+                        person = new Person(height, eye, hair, nation);
+                    } else { 
+                        person = null;
+                    } 
+
+                    if (isValid) {
+                        collection.add(new Worker(name, coordinates, salary, startDate,
+                    position, status, person));
                     }
-                    person = new Person(height, eye, hair, nation);
-                } else { 
-                    person = null;
-                }
-                
-                if (isValid) {
-                    collection.add(new Worker(name, coordinates, salary, startDate,
-                position, status, person));
+                } catch(NumberFormatException e) {
+                    ServerLogger.logger.log(Level.WARNING,"Число не верно прочитано в строке" + (size-text.size()), e);
+                    System.out.println("Не удалось прочитать число в строке "+ (size-text.size()) + ".");
+                } catch (java.time.DateTimeException e) {
+                    ServerLogger.logger.log(Level.WARNING,"Неверный формат даты", e);
+                    System.out.println("Неверный формат даты создания коллекции в строке " + (size-text.size()));
+                } catch(NoSuchElementException | NullPointerException e) {
+                    ServerLogger.logger.log(Level.WARNING,"Не удалось создать объект в строке "+(size-text.size()) , e);
+                    System.out.println("Не удалось создать объект в строке "+(size-text.size()));
                 }
                 
             }
             ServerLogger.logger.log(Level.INFO, "Смогли прочитать коллекцию из файла");
             System.out.println("Коллекция прочитана корректно");
             reader.close();
-        } catch(IOException | NoSuchElementException e) {
+        } catch(IOException | NoSuchElementException | NullPointerException e) {
             ServerLogger.logger.log(Level.WARNING,"Не удалось открыть или создать файл", e);
             System.out.println("Не удалось открыть или создать файл.\n" +
                    "Попробуйте изменить путь в переменной окружения.");
         } catch (NumberFormatException e) {
-            ServerLogger.logger.log(Level.WARNING,"Число не верно прочитано", e);
-            System.out.println("Не удалось прочитать число.");
+            ServerLogger.logger.log(Level.WARNING,"Число не верно прочитано в строке " + (size-text.size()), e);
+            System.out.println("Не удалось прочитать число в строке "+ (size-text.size()) + ".");
         } catch (java.time.DateTimeException e) {
             ServerLogger.logger.log(Level.WARNING,"Неверный формат даты", e);
-            System.out.println("Неверный формат даты");
+            System.out.println("Неверный формат даты создания коллекции.");
         }
     }
     
