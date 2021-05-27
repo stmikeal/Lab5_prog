@@ -1,6 +1,7 @@
 package command;
 
 import element.Worker;
+import server.DataManager;
 import tools.Speaker;
 import java.util.TreeSet;
 
@@ -32,7 +33,7 @@ public class CommandFilterStatus extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         collection.stream().filter(worker -> worker.statusToInt()<status).forEach(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         speaker = new Speaker(result);

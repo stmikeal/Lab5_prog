@@ -4,6 +4,7 @@ import element.*;
 import exception.EnvException;
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -30,6 +31,8 @@ public class Server {
     private static String PATH;
     static TreeSet<Worker> collection = new TreeSet<Worker>();
     private static LocalDate createDate = LocalDate.now();
+    private static String username;
+    private static String password;
     
     static {
         Comparator<Worker> comparator = (o1,o2)->
@@ -57,7 +60,26 @@ public class Server {
                 )
         );
         
+        
+        
+        
+        try {
+            Scanner filereader = new Scanner(FileReader.getStream("../userdata"));
+            username = filereader.nextLine().trim();
+            password = filereader.nextLine().trim();
+        } catch(FileNotFoundException e) {
+            System.out.println("Файл с данными для входа не найден.");
+            ServerLogger.logger.log(Level.WARNING, "Не найден userdata.");
+            System.exit(122);
+        } catch(NoSuchElementException e) {
+            System.out.println("В файле не найдены данные для входа.");
+            ServerLogger.logger.log(Level.WARNING, "userdata не содержит данных.");
+            System.exit(221);
+        }
         Class.forName("org.postgresql.Driver");
+        DatabaseHandler DH = new DatabaseHandler("jdbc:postgresql://localhost:3175/studs", username, password);
+        DH.connect();
+        
         /*
         Блок чтения из переменной окружения.
         При неудачной попытке выставляем значение по умолчанию.

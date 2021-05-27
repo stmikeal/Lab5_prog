@@ -9,10 +9,10 @@ import java.io.Serializable;
  */
 public class Person implements Serializable {
 
-    private Integer height; //Поле не может быть null, Значение поля должно быть больше 0
-    private Color eyeColor; //Поле не может быть null
-    private Color hairColor; //Поле не может быть null
-    private Country nationality; //Поле не может быть null
+    private final Integer height; //Поле не может быть null, Значение поля должно быть больше 0
+    private final Color eyeColor; //Поле не может быть null
+    private final Color hairColor; //Поле не может быть null
+    private final Country nationality; //Поле не может быть null
 
     public Person(Integer height, Color eyeColor, Color hairColor, Country nationality) {
         this.height = height;

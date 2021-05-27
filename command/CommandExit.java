@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -14,7 +16,7 @@ public class CommandExit extends Command{
     /**
      * Выходит из программы.
      *
-     * @param collection
+     * @param
      * @return 
      */
     public CommandExit(String ... args){
@@ -22,7 +24,7 @@ public class CommandExit extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         return new Speaker("exit");
     }
 }

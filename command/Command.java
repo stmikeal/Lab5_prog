@@ -1,9 +1,9 @@
 package command;
 
-import element.Worker;
 import java.io.Serializable;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -20,7 +20,7 @@ public abstract class Command  implements Serializable{
         ready = true;
     }
 
-    public Speaker event(TreeSet<Worker> collection) throws ExecutionException {
+    public Speaker event(DataManager collection) throws ExecutionException {
         return null;
     }
 

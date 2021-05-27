@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -22,7 +24,7 @@ public class CommandRemoveLower extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         try {
             collection.remove(collection.first());
             speaker = new Speaker("Наименьший элемент удачно удалён.");

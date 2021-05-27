@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+
+import server.DataManager;
 import tools.CommandParser;
 import tools.Speaker;
 
@@ -42,7 +44,7 @@ public class CommandExecute extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) throws ExecutionException {
+    public Speaker event(DataManager collection) throws ExecutionException {
         if (stack.contains(next)) {
             speaker = new Speaker("Произошло зацикливание!");
             speaker.error();

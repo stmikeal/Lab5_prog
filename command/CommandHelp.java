@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -16,7 +18,7 @@ public class CommandHelp extends Command{
     }
 
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         return new Speaker("help - справка по командам.",
                 "info - вывести информацию о коллекции.",
                 "show - вывести все элементы коллекции.",

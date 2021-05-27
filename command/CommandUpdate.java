@@ -3,6 +3,8 @@ package command;
 import element.Worker;
 import java.io.IOException;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.ReadWorker;
 import tools.Speaker;
 
@@ -36,7 +38,7 @@ public class CommandUpdate extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         worker.setId(id);
         Worker compared = collection.floor(new Worker(id)); 
         if(id == compared.getId()) {

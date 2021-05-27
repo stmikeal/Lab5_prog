@@ -1,5 +1,6 @@
 package command;
 
+import server.DataManager;
 import tools.Speaker;
 import element.Worker;
 import java.util.Comparator;
@@ -19,7 +20,7 @@ public class CommandPrint extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         collection.stream().sorted(Comparator.comparing(Worker::getId)).forEachOrdered(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         return new Speaker(result);

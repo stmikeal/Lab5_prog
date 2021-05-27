@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.io.IOException;
+
+import server.DataManager;
 import tools.Speaker;
 import tools.ReadWorker;
 import java.util.TreeSet;
@@ -33,7 +35,7 @@ public class CommandAdd extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) throws ExecutionException{
+    public Speaker event(DataManager collection) throws ExecutionException{
         try {
             collection.add(worker);
             speaker = new Speaker("Мы добавили элемент в коллекцию!");

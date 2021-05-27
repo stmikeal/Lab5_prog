@@ -2,6 +2,8 @@ package tools;
 
 import command.*;
 import element.Worker;
+import server.DataManager;
+
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -10,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 public class CommandParser {
     
-    public void listen(InputStream stream, TreeSet<Worker> collection) 
+    public void listen(InputStream stream, DataManager collection)
             throws NoSuchElementException, ExecutionException{
         String inputString;
         Command command;

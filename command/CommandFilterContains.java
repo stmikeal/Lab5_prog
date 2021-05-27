@@ -1,5 +1,6 @@
 package command;
 
+import server.DataManager;
 import tools.Speaker;
 import element.Worker;
 import java.util.TreeSet;
@@ -28,7 +29,7 @@ public class CommandFilterContains extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         collection.stream().filter(worker -> Pattern.matches(".*"+name+".*", worker.getName())).forEach(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         speaker = new Speaker(result);

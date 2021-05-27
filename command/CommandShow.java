@@ -1,7 +1,11 @@
 package command;
 
 import element.Worker;
+
+import java.util.Comparator;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -10,17 +14,15 @@ import tools.Speaker;
  * @author mike
  */
 public class CommandShow extends Command {
+    String result = "---\n";
     
     public CommandShow(String ... args) {
         ready = true;
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
-        String result = "---\n";
-        for(Worker iter:collection){
-            result+=iter.toString()+"\n---\n";
-        }
+    public Speaker event(DataManager collection) {
+        collection.stream().forEach(worker -> result+=worker.toString()+"\n---\n");
         result = result.trim();
         return new Speaker(result);
     }

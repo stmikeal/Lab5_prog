@@ -1,5 +1,6 @@
 package command;
 
+import server.DataManager;
 import tools.Speaker;
 import client.Client;
 import element.Worker;
@@ -32,7 +33,7 @@ public class CommandRemove extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {    
+    public Speaker event(DataManager collection) {
         collection.stream().filter(worker -> worker.getId()==id).forEach(worker -> compared = worker);
         if(compared!=null) {
             collection.remove(compared);

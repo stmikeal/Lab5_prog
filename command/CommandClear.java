@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.util.TreeSet;
+
+import server.DataManager;
 import tools.Speaker;
 
 /**
@@ -19,7 +21,7 @@ public class CommandClear extends Command {
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         try {
             collection.clear();
             speaker = new Speaker("Мы очистили коллекцию!");

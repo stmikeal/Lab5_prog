@@ -2,6 +2,8 @@ package command;
 
 import element.Worker;
 import java.io.InputStream;
+
+import server.DataManager;
 import tools.ReadWorker;
 import tools.Speaker;
 import java.io.IOException;
@@ -36,7 +38,7 @@ public class CommandAddIfMin extends Command{
     }
     
     @Override
-    public Speaker event(TreeSet<Worker> collection) {
+    public Speaker event(DataManager collection) {
         try {
             Integer first;
             if (collection.isEmpty()) {
