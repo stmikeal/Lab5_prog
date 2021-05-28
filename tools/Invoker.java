@@ -28,6 +28,8 @@ public class Invoker {
         commandMap.put("filter_less_than_status", (o1) -> new CommandFilterStatus(o1));
         commandMap.put("filter_contains_name", (o1) -> new CommandFilterContains(o1));
         commandMap.put("print_ascending", (o1) -> new CommandPrint(o1));
+        commandMap.put("login", (o1) -> new CommandLogin(o1));
+        commandMap.put("register", (o1) -> new CommandRegister(o1));
     }
     
     public Command invoke(String ... args) {

@@ -34,6 +34,8 @@ public class CommandHelp extends Command{
                 + "содержат подстроку.",
                 "filter_less_than_status <status>- вывести элементы, статус которых "
                 + "меньше аргумента.",
-                "print_ascending - вывести элементы в порядке возрастания.");
+                "print_ascending - вывести элементы в порядке возрастания.",
+                "login - вход в свой аккаунт.",
+                "register - регистрация в системе.");
     }
 }

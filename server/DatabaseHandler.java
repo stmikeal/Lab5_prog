@@ -33,12 +33,16 @@ public class DatabaseHandler {
         }
     }
 
-    public void register(String username, String password) throws SQLException {
+    public boolean register(String username, String password) throws SQLException {
+        if (userExists(username)) {
+            return false;
+        }
         PreparedStatement register = connection.prepareStatement(ADD_USER_REQUEST);
         register.setString(1, username);
         register.setString(2, password);
         register.executeUpdate();
         register.close();
+        return true;
     }
 
 

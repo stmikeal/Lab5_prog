@@ -250,7 +250,6 @@ public class ReadWorker {
             if (pers) person = new Person(height, eyeColor, hairColor, nationality);
         
         if (isConsole) Speaker.hr();
-        return new Worker(name, new Coordinates(x,y), salary, startAt,
-                position, status, person);
+        return new Worker(name, new Coordinates(x,y), salary, startAt, position, status, person);
     }
 }

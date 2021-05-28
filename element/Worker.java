@@ -16,7 +16,8 @@ public class Worker implements Serializable {
     private LocalDate startDate;
     private Position position;
     private Status status;
-    private Person person; 
+    private Person person;
+    private String owner;
     
     public Worker(String name, Coordinates coordinates, Double salary, 
             java.time.LocalDate startDate, Position position, Status status,
@@ -44,6 +45,9 @@ public class Worker implements Serializable {
         this.id = id;
     }
 
+    public void setOwner(String login) {
+        this.owner = login;
+    }
     public void setId(Integer id) {
         this.id = id;
     }

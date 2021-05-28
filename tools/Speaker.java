@@ -21,6 +21,8 @@ public class Speaker implements Serializable {
     private static final String ANSI_WHITE = "\u001B[37m";
     private static final String hr = "----------------------------------------------------";
     private String message;
+    private String privateMessage1 = "";
+    private String privateMessage2 = "";
     
     
     public String getMessage() {
@@ -110,5 +112,18 @@ public class Speaker implements Serializable {
                 default: return ANSI_RESET;
             }
         }
+    }
+
+    public void setPrivateMessage1(String privateMessage1) {
+        this.privateMessage1 = privateMessage1;
+    }
+    public void setPrivateMessage2(String privateMessage2) {
+        this.privateMessage2 = privateMessage2;
+    }
+    public String getPrivateMessage1() {
+        return privateMessage1;
+    }
+    public String getPrivateMessage2() {
+        return privateMessage2;
     }
 }

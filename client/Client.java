@@ -29,6 +29,8 @@ public class Client {
     private Speaker speaker;
     private final int REP = 20;
     private final InetSocketAddress address;
+    private String username = null;
+    private String password = null;
     
     static {
         System.setProperty("logback.xml", "../logback.xml");
@@ -85,12 +87,14 @@ public class Client {
         while(scanner.hasNext()) {
             
             inputString = scanner.nextLine();
-            command= cp.choice(inputString);
+            command = cp.choice(inputString);
+            command.setUsername(this.username);
+            command.setPassword(this.password);
             if (!inputString.equals("")) {
                 ClientLogger.logger.log(Level.INFO, "Введена команда " + inputString);
             }
-            
-            if (command != null) {
+
+            if ((command != null)&&(command.isReady())) {
                 try {
                     speaker = this.execute(command, 0);
                     
@@ -103,6 +107,13 @@ public class Client {
                     if (speaker.getMessage().equals("unconnected\n")) {
                         ClientLogger.logger.log(Level.WARNING, "Ошибка подключения к серверу");
                         System.out.println("Сервер не доступен, извините:( Выходим из программы...");
+                        System.exit(0);
+                    }
+
+                    if (speaker.getMessage().equals("Успешный вход.\n")
+                            &&speaker.getMessage().equals("Успешная регистрация.\n")) {
+                        username = speaker.getPrivateMessage1();
+                        password = speaker.getPrivateMessage2();
                         System.exit(0);
                     }
                     
