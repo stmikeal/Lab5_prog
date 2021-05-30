@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
+
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
@@ -22,13 +25,13 @@ import java.util.logging.Level;
  */
 public class Client {
     
-    private SocketChannel clientSocket;
+    private Socket clientSocket;
     private ObjectInputStream inStream;
     private ObjectOutputStream outStream;
     private int PORT;
     private Speaker speaker;
-    private final int REP = 20;
-    private final InetSocketAddress address;
+    private final int REP = 100;
+    private final InetAddress address;
     private String username = null;
     private String password = null;
     
@@ -69,7 +72,12 @@ public class Client {
             System.out.println("Устанавливаем значение по умолчанию - 4242.");
         }
         ClientLogger.logger.log(Level.INFO, "Клиент работает на порту: " + PORT);
-        address = new InetSocketAddress("127.0.0.1", PORT);
+        try {
+            this.connect();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        address = clientSocket.getInetAddress();
         
         System.out.println("Добрый день, мы рады вас приветствовать в этой программе,"
                 + "\nДля справки введите help.");
@@ -88,15 +96,16 @@ public class Client {
             
             inputString = scanner.nextLine();
             command = cp.choice(inputString);
-            command.setUsername(this.username);
-            command.setPassword(this.password);
+            if (command != null&&command.getUsername()==null) {
+                command.setUsername(this.username);
+            }
             if (!inputString.equals("")) {
                 ClientLogger.logger.log(Level.INFO, "Введена команда " + inputString);
             }
 
             if ((command != null)&&(command.isReady())) {
                 try {
-                    speaker = this.execute(command, 0);
+                    speaker = this.execute(command);
                     
                     if (speaker.getMessage().equals("exit\n")) {
                         ClientLogger.logger.log(Level.INFO, "Введено exit, выходим");
@@ -111,67 +120,40 @@ public class Client {
                     }
 
                     if (speaker.getMessage().equals("Успешный вход.\n")
-                            &&speaker.getMessage().equals("Успешная регистрация.\n")) {
+                            ||speaker.getMessage().equals("Успешная регистрация.\n")) {
                         username = speaker.getPrivateMessage1();
                         password = speaker.getPrivateMessage2();
-                        System.exit(0);
                     }
                     
                     speaker.println();
                 } catch(ClassNotFoundException e){
                     ClientLogger.logger.log(Level.INFO, "Ответ от сервера в неккоректном формате", e);
                     System.out.println("Ответ пришел в некорректном формате!");
-                } catch(InterruptedException e) {
-                    ClientLogger.logger.log(Level.INFO, "Прерван поток во время чтения", e);
-                    System.out.println("О нет! Кажется, я умираю...");
                 }
             }
         }
         
     }
     
-    public Speaker execute(Command command, int stack) throws InterruptedException, ClassNotFoundException{
-        Speaker tempSpeaker;
-        if (stack > REP) {
-            return new Speaker("unconnected");
-        }
-        if (stack > 0) {
-            ClientLogger.logger.log(Level.INFO, "Попытка подключения номер " + stack);
-        }
+    public Speaker execute(Command command) throws ClassNotFoundException{
+        Speaker tempSpeaker = null;
         try {
-            this.connect();
-            write(command);
-            sleep(100);
-            tempSpeaker = read();
+            outStream.writeObject(command);
+            outStream.flush();
+            tempSpeaker = (Speaker) inStream.readObject();
         } catch(IOException e) {
-            ClientLogger.logger.log(Level.INFO, "Неудачная попытка подключения номер " + stack);
-            return execute(command, stack + 1);
+            ClientLogger.logger.log(Level.INFO, "Неудачная попытка подключения");
         }
         return tempSpeaker;
     }
     
     public void connect() throws IOException{
-        clientSocket = SocketChannel.open(address);
-    }
-    
-    public void write(Command command) throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream(2048);
-        outStream = new ObjectOutputStream(buffer);
+        clientSocket = new Socket("127.0.0.1", PORT);
+        outStream = new ObjectOutputStream(clientSocket.getOutputStream());
         outStream.flush();
-        
-        outStream.writeObject((Object)command);
-        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer.toByteArray());
-        
-        clientSocket.write(byteBuffer);
+        inStream = new ObjectInputStream(clientSocket.getInputStream());
     }
-    
-    public Speaker read() throws IOException, ClassNotFoundException {
-        byte[] buffer = new byte[2048];
-        
-        clientSocket.read(ByteBuffer.wrap(buffer));
-        inStream = new ObjectInputStream(new ByteArrayInputStream(buffer));
-        return (Speaker) inStream.readObject();
-    }
+
     
     public static void printCat() {
         System.out.println("########################%+::*****++*+=++****+*+*::+++*+::--./&!!&&/\\-.-@#%%%%%%%%%%%%%%%%%%@@@@@@@@@\n" +

@@ -15,8 +15,8 @@ public abstract class Command  implements Serializable{
 
     boolean ready = false;
     Speaker speaker;
-    private String username;
-    private String password;
+    protected String username = null;
+    protected String password = null;
 
     public void setUsername(String username) {
         this.username = username;

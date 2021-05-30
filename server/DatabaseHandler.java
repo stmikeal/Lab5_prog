@@ -7,13 +7,13 @@ public class DatabaseHandler {
     private final String username;
     private final String password;
     private Connection connection;
-    private static final String ADD_USER_REQUEST = "INSERT INTO USERS (username, password) VALUES (?, ?)";
+    private static final String ADD_USER_REQUEST = "INSERT INTO USERS (login, password) VALUES (?, ?)";
     private static final String UPDATE_FLAT_REQUEST = "UPDATE FLATS SET name = ?, coordX = ?, coordY = ?, creationDate = ?, area = ?, numberOfRooms = ?, livingSpace = ?, view = ?, transport = ?, house_name = ?, house_year = ?, house_numberOfFlatsOnFloor = ? WHERE id = ?";
     private static final String ADD_NEW_FLAT_REQUEST = "INSERT INTO FLATS (name, coordX, coordY, creationDate, area, numberOfRooms, livingSpace, view, transport, house_name, house_year, house_numberOfFlatsOnFloor, username) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String CHECK_USER_REQUEST = "SELECT * FROM USERS WHERE username = ?";
+    private static final String CHECK_USER_REQUEST = "SELECT * FROM USERS WHERE login = ?";
     private static final String FLATS_REQUEST = "SELECT * FROM FLATS";
     private static final String USER_BY_ID_REQUEST = "SELECT * FROM FLATS WHERE id = ?";
-    private static final String LOGIN_USER_REQUEST = "SELECT * FROM USERS WHERE username = ? AND password = ?";
+    private static final String LOGIN_USER_REQUEST = "SELECT * FROM USERS WHERE login = ? AND password = ?";
 
 
     public DatabaseHandler(String URL, String username, String password) {

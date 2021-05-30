@@ -8,15 +8,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDate;
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import tools.*;
 
@@ -29,17 +29,14 @@ public class Server {
 
     private static int PORT;
     private static String PATH;
-    static TreeSet<Worker> collection = new TreeSet<Worker>();
+    static DataManager collection = null;
     private static LocalDate createDate = LocalDate.now();
     private static String username;
     private static String password;
-
-    static {
-        Comparator<Worker> comparator = (o1, o2) ->
-                ((Integer) o1.getId()).compareTo((Integer) o2.getId());
-        collection = new TreeSet(comparator);
-    }
-
+    private static ConcurrentHashMap<InetAddress, String> userBase= new ConcurrentHashMap<>();
+    private static ExecutorService readPool = Executors.newCachedThreadPool();
+    private static ExecutorService exePool = ForkJoinPool.commonPool();
+    private static ExecutorService writePool = ForkJoinPool.commonPool();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -60,9 +57,9 @@ public class Server {
 
 
         try {
-            Scanner filereader = new Scanner(FileReader.getStream("../userdata"));
-            username = filereader.nextLine().trim();
-            password = filereader.nextLine().trim();
+            Scanner scanner = new Scanner(FileReader.getStream("../userdata"));
+            username = scanner.nextLine().trim();
+            password = scanner.nextLine().trim();
         } catch (FileNotFoundException e) {
             System.out.println("Файл с данными для входа не найден.");
             ServerLogger.logger.log(Level.WARNING, "Не найден userdata.");
@@ -75,6 +72,7 @@ public class Server {
         Class.forName("org.postgresql.Driver");
         DatabaseHandler DH = new DatabaseHandler("jdbc:postgresql://localhost:3175/studs", username, password);
         DH.connect();
+        collection = new DataManager(DH);
 
         
         /*
@@ -119,7 +117,8 @@ public class Server {
                 Socket socket = server.accept();
 
                 try {
-                    SocketAdapter adapter = new SocketAdapter(socket);
+                    SocketAdapter adapter = new SocketAdapter(socket, userBase, exePool, writePool);
+                    readPool.execute(adapter);
                     ServerLogger.logger.log(Level.INFO, "Запущен адаптер для " +
                             socket.getInetAddress().toString());
                 } catch (IOException e) {

@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 public class CommandRegister extends Command{
-    private String username;
-    private String password;
 
     public CommandRegister(String ... args) {
         Scanner scanner = new Scanner(System.in);
@@ -35,6 +33,7 @@ public class CommandRegister extends Command{
         try {
             result = collection.register(username, password);
         } catch(SQLException e) {
+            System.out.println(e.getMessage());
             return new Speaker("Ошибка доступа к базе данных пользователей.");
         }
         if (result) {
@@ -43,7 +42,7 @@ public class CommandRegister extends Command{
             speaker.setPrivateMessage2(password);
             return speaker;
         } else {
-            return new Speaker("Неверный логин или пароль.");
+            return new Speaker("Логин уже занят.");
         }
     }
 }
