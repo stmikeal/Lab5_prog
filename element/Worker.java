@@ -1,6 +1,7 @@
 package element;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Класс из задачи.
@@ -48,32 +49,51 @@ public class Worker implements Serializable {
     public void setOwner(String login) {
         this.owner = login;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
-    /**
-     * Getter для id.
-     * @return int
-     */
+
     public int getId() {
         return id;
     }
 
-    /**
-     * Getter для name.
-     * @return String
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Приведение статуса.
-     * Приводит статус к числу.
-     * @param status
-     * @return int
-     */
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate.atStartOfDay();
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate.atStartOfDay();
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
     public static int statusToInt(String status) {
         switch(status) {
             case "RECOMMENDED_FOR_PROMOTION" : return 2;
@@ -83,6 +103,7 @@ public class Worker implements Serializable {
             default: return -1;
         }
     }
+
     public static int statusToInt(Status status) {
         if (status==null) return 0;
         switch(status) {
@@ -92,8 +113,8 @@ public class Worker implements Serializable {
             default: return -1;
         }
     }
+
     public int statusToInt() {
-        status = this.status;
         return statusToInt(status);
     }
     

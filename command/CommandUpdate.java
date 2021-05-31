@@ -40,7 +40,7 @@ public class CommandUpdate extends Command{
     @Override
     public Speaker event(DataManager collection) {
         worker.setId(id);
-        Worker compared = collection.floor(new Worker(id)); 
+        Worker compared = collection.floor(new Worker(id));
         if(id == compared.getId()) {
             collection.add(worker);
             collection.remove(compared);

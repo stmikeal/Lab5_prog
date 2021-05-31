@@ -9,7 +9,6 @@ import java.io.Serializable;
  * @author mike
  */
 public class Speaker implements Serializable {
-    private static final Scanner scanner = new Scanner(System.in);
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[31m";
@@ -20,18 +19,17 @@ public class Speaker implements Serializable {
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
     private static final String hr = "----------------------------------------------------";
-    private String message;
+    private StringBuilder message;
     private String privateMessage1 = "";
     private String privateMessage2 = "";
     
     
     public String getMessage() {
-        return this.message;
+        return this.message.toString();
     }
     /**
      * Вывод строк.
      * Выводит каждый аргумент с новой строки.
-     * @param args
      */
     public static void println(String ... args){
         for(String s:args){
@@ -46,41 +44,30 @@ public class Speaker implements Serializable {
     }
     
     public void error(){
-        message = ANSI_RED + message + ANSI_RESET;
+        message = new StringBuilder(ANSI_RED + message + ANSI_RESET);
     }
     
     public void success() {
-        message = ANSI_GREEN + message + ANSI_RESET;
+        message = new StringBuilder(ANSI_GREEN + message + ANSI_RESET);
     }
     
     public Speaker(String ... args){
-        this.message = "";
+        this.message = new StringBuilder();
         for(String arg:args){
-            message += arg + "\n";
+            message.append(arg).append("\n");
         }
     }
    
     /**
      * Вывод строк.
      * Выводит все аргументы с новой строки, с заданным цветом.
-     * @param color
-     * @param args
      */
     public static void println(FontColor color, String ... args){
         System.out.print(color.toString());
         println(args);
         System.out.print(ANSI_RESET);
     }
-    
-    public static String scanString(){
-        return scanner.nextLine();
-    }
-    
-    public static String scanString(String s){
-        System.out.println(s);
-        return scanString();
-    }
-    
+
     public static String scanStream(InputStream stream){
         Scanner reader = new Scanner(stream);
         return reader.nextLine();
@@ -90,12 +77,14 @@ public class Speaker implements Serializable {
      * Полосочка.
      * Выводит длинную полоску для разделения информации.
      */
-    public static void hr(){System.out.println(hr);}
+    public static void hr() {
+        System.out.println(hr);
+    }
     
     /**
      * Перечисление доступных цветов для текста.
      */
-    public static enum FontColor implements Serializable{
+    public enum FontColor implements Serializable{
         BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE;
         
         @Override

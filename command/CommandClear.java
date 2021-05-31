@@ -23,7 +23,7 @@ public class CommandClear extends Command {
     @Override
     public Speaker event(DataManager collection) {
         try {
-            collection.clear();
+            collection.clear(username);
             speaker = new Speaker("Мы очистили коллекцию!");
             speaker.success();
             return speaker;

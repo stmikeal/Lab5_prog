@@ -21,6 +21,22 @@ public class Person implements Serializable {
         this.nationality = nationality;
     }
 
+    public Color getEyeColor() {
+        return eyeColor;
+    }
+
+    public Color getHairColor() {
+        return hairColor;
+    }
+
+    public Country getNationality() {
+        return nationality;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
     @Override
     public String toString() {
         String result = Integer.toString(height);
