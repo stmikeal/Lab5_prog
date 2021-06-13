@@ -3,6 +3,8 @@ package command;
 import server.DataManager;
 import tools.Speaker;
 import element.Worker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -30,9 +32,15 @@ public class CommandFilterContains extends Command{
     
     @Override
     public Speaker event(DataManager collection) {
-        collection.stream().filter(worker -> Pattern.matches(".*"+name+".*", worker.getName())).forEach(worker -> result+=worker.toString()+"\n---\n");
-        result = result.trim();
-        speaker = new Speaker(result);
-        return speaker;
+        try {
+            collection.stream().filter(worker -> Pattern.matches(".*" + name + ".*", worker.getName())).forEach(worker -> result += worker.toString() + "\n---\n");
+            result = result.trim();
+            speaker = new Speaker(result);
+            return speaker;
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
+        }
     }
 }

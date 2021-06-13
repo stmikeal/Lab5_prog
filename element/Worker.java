@@ -18,7 +18,7 @@ public class Worker implements Serializable {
     private Position position;
     private Status status;
     private Person person;
-    private String owner;
+    private String owner = null;
     
     public Worker(String name, Coordinates coordinates, Double salary, 
             java.time.LocalDate startDate, Position position, Status status,
@@ -121,17 +121,18 @@ public class Worker implements Serializable {
     @Override
     public String toString() {
         String result = "";           
-        result += "id, "+id+"\n";
-        result += "name, "+name+"\n";
-        result += "coordinates, "+coordinates.getX()+", "+coordinates.getY()+"\n";
-        result += "salary, "+Double.toString(salary)+"\n";
-        result += "startDate, "+startDate.toString()+"\n";
-        if (position==null) result += "position, null\n";
-        else result += "position, "+position.toString()+"\n";
-        if (status==null) result += "status, null\n";
-        else result += "status, "+status.toString()+"\n";
-        if (person==null) result += "person, null\n";
-        else result += "person, "+person.toString()+"\n";
+        result += "id: "+id+"\n";
+        result += "name: "+name+"\n";
+        result += "coordinates: "+coordinates.getX()+", "+coordinates.getY()+"\n";
+        result += "salary: "+Double.toString(salary)+"\n";
+        result += "startDate: "+startDate.toString()+"\n";
+        if (position==null) result += "position: null\n";
+        else result += "position: "+position.toString()+"\n";
+        if (status==null) result += "status: null\n";
+        else result += "status: "+status.toString()+"\n";
+        if (person==null) result += "person: null\n";
+        else result += "person: "+person.toString()+"\n";
+        result += "owner: "+this.owner;
         return result;
     }
     

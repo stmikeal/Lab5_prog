@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import tools.*;
 
@@ -57,14 +56,16 @@ public class SocketAdapter implements Runnable{
         Иначе отправляем стандартный ответ об ошибке.
         */
         while(thread!=null) {
+
             Command command = null;
 
             try {
                 command = (Command) inStream.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println("Не смогли прочитать запрос пользователя.");
+            } catch(ClassNotFoundException e) {
+                System.out.println("Запрос пользователя пришёл в некорректном формате.");
             }
-            System.out.println("get");
 
             Command finalCommand = command;
             Speaker spk = null;
@@ -89,32 +90,29 @@ public class SocketAdapter implements Runnable{
                             thread = null;
                         }
                     } catch (NullPointerException e) {
-                        e.printStackTrace();
                         thread = null;
                     }
 
                     return message;
                 }).get();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Поток выполнения команды был прерван.");
             } catch (ExecutionException e) {
-                e.printStackTrace();
+                System.out.println("Ошибка выполнения команды.");
             }
-            System.out.println("message");
 
             Speaker finalSpk = spk;
             writePool.submit(() -> {
                 try {
-                    //objStream.writeObject(message);
-
                     outStream.writeObject(finalSpk);
                     outStream.flush();
                 } catch (IOException e) {
                     ServerLogger.logger.log(Level.WARNING, "Поток был прерван", e);
                     System.out.println("Поток " + clientAddress + ": не удалось отправить ответ пользователю");
+                    thread.interrupt();
+                    thread = null;
                 }
             });
-            System.out.println("write");
         }
 
     }

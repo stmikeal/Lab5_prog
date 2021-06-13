@@ -6,43 +6,156 @@ import java.sql.SQLException;
 import java.util.stream.Stream;
 
 public class DataManager {
-    private final DatabaseHandler handler;
+    private DatabaseHandler handler;
 
     public  DataManager(DatabaseHandler handler) {
         this.handler = handler;
     }
 
-    public void add(Worker worker) {
-        handler.add(worker);
-    }
-    public boolean isEmpty() {
-        return handler.isEmpty();
-    }
-    public Worker first() {
-        return handler.first();
-    }
-    public void clear(String username) {
-        handler.clear(username);
-    }
-    public Stream<Worker> stream() {
-        return handler.stream();
-    }
-    public int size() {
-        return handler.size();
-    }
-    public void remove(Worker elem) {
-        handler.remove(elem);
+    public void reconnect() throws SQLException {
+        int count = 10000;
+        while(!handler.connect()&&count>0) count--;
+        if (count<=0) {
+            throw new SQLException("База данных недоступна");
+        }
     }
 
-    public Worker floor(Worker worker) {
-        return handler.floor(worker);
+
+    public void add(Worker worker) throws SQLException{
+        try{
+            handler.add(worker);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                handler.add(worker);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+    public Boolean isEmpty() throws SQLException{
+        try{
+            return handler.isEmpty();
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.isEmpty();
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+    public Worker first() throws SQLException{
+        try{
+            return handler.first();
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.first();
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+
+    public void clear(String username) throws SQLException{
+        try{
+            handler.clear(username);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                handler.clear(username);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+
+    public Stream<Worker> stream() throws SQLException{
+        try{
+            return handler.stream();
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.stream();
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+
+    public Integer size() throws SQLException{
+        try{
+            return handler.size();
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.size();
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+
+    public void remove(Worker elem) throws SQLException{
+        try{
+            handler.remove(elem);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                handler.remove(elem);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
+    }
+
+    public Worker floor(Worker worker) throws SQLException{
+        try{
+            return handler.floor(worker);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.floor(worker);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
     }
 
     public boolean login(String username, String password) throws SQLException {
-        return handler.login(username, password);
+        try{
+            return handler.login(username, password);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.login(username, password);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
     }
 
-    public boolean register(String username, String password) throws SQLException {
-        return handler.register(username, password);
+    public Boolean register(String username, String password) throws SQLException {
+        try{
+            return handler.register(username, password);
+        } catch(SQLException e) {
+            try {
+                reconnect();
+                return handler.register(username, password);
+            } catch(SQLException v) {
+                System.out.println("Не удалось переподключиться к БД.");
+                throw new SQLException(e.getMessage());
+            }
+        }
     }
 }

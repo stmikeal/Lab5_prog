@@ -1,6 +1,8 @@
 package command;
 
 import element.Worker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 import server.DataManager;
@@ -19,7 +21,13 @@ public class CommandInfo extends Command{
     
     @Override
     public Speaker event(DataManager collection) {
-        return new Speaker("TreeSet<Worker> collection, "+server.Server.getDate().toString()+", "+
-                Integer.toString(collection.size())+" elements.");
+        try {
+            return new Speaker("TreeSet<Worker> collection, " + server.Server.getDate().toString() + ", " +
+                    Integer.toString(collection.size()) + " elements.");
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
+        }
     }
 }

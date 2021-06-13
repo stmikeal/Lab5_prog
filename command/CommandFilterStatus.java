@@ -3,6 +3,8 @@ package command;
 import element.Worker;
 import server.DataManager;
 import tools.Speaker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 /**
@@ -34,9 +36,15 @@ public class CommandFilterStatus extends Command{
     
     @Override
     public Speaker event(DataManager collection) {
-        collection.stream().filter(worker -> worker.statusToInt()<status).forEach(worker -> result+=worker.toString()+"\n---\n");
-        result = result.trim();
-        speaker = new Speaker(result);
-        return speaker;
+        try {
+            collection.stream().filter(worker -> worker.statusToInt() < status).forEach(worker -> result += worker.toString() + "\n---\n");
+            result = result.trim();
+            speaker = new Speaker(result);
+            return speaker;
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
+        }
     }
 }

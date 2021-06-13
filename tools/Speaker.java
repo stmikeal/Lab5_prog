@@ -44,7 +44,7 @@ public class Speaker implements Serializable {
     }
     
     public void error(){
-        message = new StringBuilder(ANSI_RED + message + ANSI_RESET);
+
     }
     
     public void success() {

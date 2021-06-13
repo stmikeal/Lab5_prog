@@ -1,6 +1,8 @@
 package command;
 
 import element.Worker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 import server.DataManager;
@@ -29,6 +31,10 @@ public class CommandRemoveLower extends Command{
             collection.remove(collection.first());
             speaker = new Speaker("Наименьший элемент удачно удалён.");
             speaker.success();
+            return speaker;
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
             return speaker;
         } catch(Exception e) {
             speaker = new Speaker("Коллекция пуста.");

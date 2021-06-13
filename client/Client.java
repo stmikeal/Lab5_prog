@@ -31,7 +31,7 @@ public class Client {
     private int PORT;
     private Speaker speaker;
     private final int REP = 100;
-    private final InetAddress address;
+    private InetAddress address;
     private String username = null;
     private String password = null;
     
@@ -54,6 +54,7 @@ public class Client {
     }
     
     public Client() {
+
         System.out.println("Введите порт для подключения:");
         try {
             PORT = 4242;
@@ -75,14 +76,19 @@ public class Client {
         try {
             this.connect();
         } catch(IOException e) {
-            e.printStackTrace();
         }
-        address = clientSocket.getInetAddress();
-        
+        try {
+            address = clientSocket.getInetAddress();
+        } catch (NullPointerException e) {
+            System.out.println("Введен неверный порт");
+            System.exit(122);
+        }
+
         System.out.println("Добрый день, мы рады вас приветствовать в этой программе,"
-                + "\nДля справки введите help.");
+                + "\nДля авторизации или регистрации введите login/register.");
         
         listen();
+
     }
     
     public final void listen() {
@@ -96,17 +102,20 @@ public class Client {
             
             inputString = scanner.nextLine();
             command = cp.choice(inputString);
+
             if (command != null&&command.getUsername()==null) {
                 command.setUsername(this.username);
             }
+
             if (!inputString.equals("")) {
-                ClientLogger.logger.log(Level.INFO, "Введена команда " + inputString);
+                ClientLogger.logger.log(Level.INFO, "Введена строка " + inputString);
             }
 
             if ((command != null)&&(command.isReady())) {
                 try {
+
                     speaker = this.execute(command);
-                    
+
                     if (speaker.getMessage().equals("exit\n")) {
                         ClientLogger.logger.log(Level.INFO, "Введено exit, выходим");
                         System.out.println("Работа завершена. До свидания!");
@@ -193,7 +202,6 @@ public class Client {
 "######@@@@@@@%%%=+++************:********:::::*:::----..-.......-----:::::*************++=%%@##@####\n" +
 "#@@@@%%%======++++++++++++==++************:::::--...\\.\\.\\\\\\\\\\/\\\\.....----------::::-:::::*+=%@######\n" +
 "%%%%%%%%%%%=====%===+++*****:::----::--:--.....\\\\\\//\\/////|/||||///////\\\\\\\\\\\\\\\\\\..\\....---::*=@#####\n" +
-"%%%%%%%%==++++++*****:**::------.-.\\\\\\.\\\\\\\\\\\\\\////////|||/|/|||||||||||||||||//////\\\\\\\\...-:**===%=%\n" +
-"");
+"%%%%%%%%==++++++*****:**::------.-.\\\\\\.\\\\\\\\\\\\\\////////|||/|/|||||||||||||||||//////\\\\\\\\...-:**===%=%\n");
     }
 }

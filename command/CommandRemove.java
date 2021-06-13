@@ -4,6 +4,8 @@ import server.DataManager;
 import tools.Speaker;
 import client.Client;
 import element.Worker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 /**
@@ -34,14 +36,20 @@ public class CommandRemove extends Command{
     
     @Override
     public Speaker event(DataManager collection) {
-        collection.stream().filter(worker -> worker.getId()==id).forEach(worker -> compared = worker);
-        if(compared!=null) {
-            collection.remove(compared);
-            speaker = new Speaker("Элемент удачно удален.");
-            speaker.success();
+        try {
+            collection.stream().filter(worker -> worker.getId() == id).forEach(worker -> compared = worker);
+            if (compared != null) {
+                compared.setOwner(username);
+                collection.remove(compared);
+                speaker = new Speaker("Элемент удачно удален.");
+                speaker.success();
+            } else {
+                speaker = new Speaker("Элемент не найден.");
+                speaker.error();
+            }
             return speaker;
-        } else {
-            speaker = new Speaker("Элемент не найден.");
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
             speaker.error();
             return speaker;
         }

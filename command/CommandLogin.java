@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 public class CommandLogin extends Command{
-    private String username;
-    private String password;
     public CommandLogin(String ... args) {
         Scanner scanner = new Scanner(System.in);
         while(true) {
@@ -41,8 +39,10 @@ public class CommandLogin extends Command{
         boolean result = false;
         try {
             result = collection.login(username, password);
-        } catch(SQLException e) {
-            return new Speaker("Ошибка доступа к базе данных пользователей.");
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
         }
         if (result) {
             Speaker speaker = new Speaker("Успешный вход.");

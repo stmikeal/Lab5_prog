@@ -2,13 +2,11 @@ package server;
 
 import element.*;
 import tools.LocalDateAdapter;
-import tools.ServerLogger;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class DatabaseHandler {
@@ -32,15 +30,17 @@ public class DatabaseHandler {
         this.password = password;
     }
     
-    public void connect() {
+    public boolean connect() throws SQLException{
         try {
-            connection = DriverManager.getConnection(URL, username, password);
+            Class.forName("org.postgresql.Driver");
+        } catch(Exception e) {}
+        Connection check = DriverManager.getConnection(URL, username, password);
+        if (check != null) {
+            this.connection = check;
             System.out.println("Установлено соединение с БД.");
-        } catch(SQLException e) {
-            e.printStackTrace();
-            System.out.println("Не удалось выполнить подключение к БД.");
-            System.exit(889);
+            return true;
         }
+        return false;
     }
 
     public boolean register(String username, String password) throws SQLException {
@@ -55,16 +55,11 @@ public class DatabaseHandler {
         return true;
     }
 
-    public void add(Worker worker) {
-        try {
-            PreparedStatement saveStatement = connection.prepareStatement(ADD_NEW_WORKER_REQUEST);
-            setWorker(saveStatement, worker);
-            saveStatement.executeUpdate();
-            saveStatement.close();
-        } catch (SQLException e) {
-            System.err.println("Ошибка доступа к базе данных.");
-            ServerLogger.logger.log(Level.WARNING, "Ошибка доступа к базе", e);
-        }
+    public void add(Worker worker) throws SQLException {
+        PreparedStatement saveStatement = connection.prepareStatement(ADD_NEW_WORKER_REQUEST);
+        setWorker(saveStatement, worker);
+        saveStatement.executeUpdate();
+        saveStatement.close();
     }
 
     private void setWorker(PreparedStatement statement, Worker worker) throws SQLException{
@@ -72,14 +67,14 @@ public class DatabaseHandler {
         statement.setDouble(2, worker.getCoordinates().getX());
         statement.setDouble(3, worker.getCoordinates().getY());
         statement.setDouble(4, worker.getSalary());
-        statement.setString(5, worker.getPosition().toString());
-        statement.setString(6, worker.getStatus().toString());
+        statement.setString(5, forcedString(worker.getPosition()));
+        statement.setString(6, forcedString(worker.getStatus()));
         boolean personal = worker.getPerson() != null;
         statement.setBoolean(7, personal);
         if (personal) {
-            statement.setString(8, worker.getPerson().getNationality().toString());
-            statement.setString(9, worker.getPerson().getEyeColor().toString());
-            statement.setString(10, worker.getPerson().getHairColor().toString());
+            statement.setString(8, forcedString(worker.getPerson().getNationality()));
+            statement.setString(9, forcedString(worker.getPerson().getEyeColor()));
+            statement.setString(10, forcedString(worker.getPerson().getHairColor()));
             statement.setInt(11, worker.getPerson().getHeight());
         } else {
             statement.setString(8, null);
@@ -92,6 +87,14 @@ public class DatabaseHandler {
         statement.setTimestamp(14, Timestamp.valueOf(worker.getStartDate()));
     }
 
+    private String forcedString(Object obj) {
+        if (obj != null) {
+            return obj.toString();
+        } else {
+            return null;
+        }
+    }
+
     private Worker getWorker(ResultSet result) throws SQLException{
         String name = result.getString(2);
         Coordinates coordinates = new Coordinates(result.getDouble(3),
@@ -100,11 +103,11 @@ public class DatabaseHandler {
         Position position = null;
         try {
             position = Position.valueOf(result.getString(6));
-        } catch(IllegalArgumentException e) {}
+        } catch(IllegalArgumentException | NullPointerException e) {}
         Status status = null;
         try {
             status = Status.valueOf(result.getString(7));
-        } catch(IllegalArgumentException e) {}
+        } catch(IllegalArgumentException | NullPointerException e) {}
         boolean personalData = result.getBoolean(8);
         Person person = null;
         Country country = null;
@@ -113,64 +116,54 @@ public class DatabaseHandler {
         int height = 0;
         try {
             country = Country.valueOf(result.getString(9));
+        } catch(IllegalArgumentException | NullPointerException e) {}
+        try {
             eyeColor = Color.valueOf(result.getString(10));
+        } catch(IllegalArgumentException | NullPointerException e) {}
+        try {
             hairColor = Color.valueOf(result.getString(11));
-            height = result.getInt(12);
-        } catch(IllegalArgumentException e) {
-            personalData = false;
-        }
+        } catch(IllegalArgumentException | NullPointerException e) {}
+        height = result.getInt(12);
         String owner = result.getString(13);
         LocalDate dateCreation = LocalDateAdapter.encode(result.getString(14));
         LocalDate dateStart = LocalDateAdapter.encode(result.getString(15));
         if (personalData) {
             person = new Person(height, eyeColor, hairColor, country);
         }
-        return new Worker(name, coordinates, salary, dateStart, position, status, person);
+        Worker worker = new Worker(name, coordinates, salary, dateStart, position, status, person);
+        worker.setOwner(owner);
+        return worker;
     }
 
-    public boolean isEmpty() {
-        try {
-            PreparedStatement joinStatement = connection.prepareStatement(WORKER_REQUEST);
-            ResultSet result = joinStatement.executeQuery();
-            return result.next();
-        } catch(SQLException e) {
-            return true;
+    public boolean isEmpty() throws SQLException{
+        PreparedStatement joinStatement = connection.prepareStatement(WORKER_REQUEST);
+        ResultSet result = joinStatement.executeQuery();
+        return result.next();
+    }
+
+    public void clear(String username) throws SQLException{
+        PreparedStatement clearStatement = connection.prepareStatement(CLEAR_REQUEST);
+        clearStatement.setString(1, username);
+        clearStatement.executeUpdate();
+    }
+
+    public int size() throws SQLException{
+        PreparedStatement sizeStatement = connection.prepareStatement(WORKER_REQUEST);
+        ResultSet result = sizeStatement.executeQuery();
+        int count = 0;
+        while(result.next()) {
+            count++;
         }
+        return count;
     }
 
-    public void clear(String username) {
-        try {
-            PreparedStatement clearStatement = connection.prepareStatement(CLEAR_REQUEST);
-            clearStatement.setString(1, username);
-            clearStatement.executeUpdate();
-        } catch(SQLException e) {}
+    public void remove(Worker worker) throws SQLException{
+        PreparedStatement removeStatement = connection.prepareStatement(REMOVE_WORKER_REQUEST);
+        setWorker(removeStatement, worker);
+        removeStatement.executeUpdate();
     }
 
-    public int size() {
-        try {
-            PreparedStatement sizeStatement = connection.prepareStatement(WORKER_REQUEST);
-            ResultSet result = sizeStatement.executeQuery();
-            int count = 0;
-            while(result.next()) {
-                count++;
-            }
-            return count;
-        } catch(SQLException e) {
-            return 0;
-        }
-    }
-
-    public void remove(Worker worker) {
-        try {
-            PreparedStatement removeStatement = connection.prepareStatement(REMOVE_WORKER_REQUEST);
-            setWorker(removeStatement, worker);
-            removeStatement.executeUpdate();
-        } catch(SQLException e) {
-        }
-    }
-
-    public Worker first() {
-        try {
+    public Worker first() throws SQLException{
             PreparedStatement joinStatement = connection.prepareStatement(FIRST_WORKER_REQUEST);
             ResultSet result = joinStatement.executeQuery();
             if (result.next()) {
@@ -178,12 +171,9 @@ public class DatabaseHandler {
             } else {
                 return new Worker(-2147483648);
             }
-        } catch(SQLException e) {
-            return new Worker(-2147483648);
-        }
     }
 
-    public Stream<Worker> stream() {
+    public Stream<Worker> stream() throws SQLException{
         TreeSet<Worker> collection = new TreeSet<>(new Comparator<Worker>() {
             @Override
             public int compare(Worker o1, Worker o2) {
@@ -191,26 +181,21 @@ public class DatabaseHandler {
             }
         });
         int count = 0;
-        try {
-            PreparedStatement table = connection.prepareStatement(WORKER_REQUEST);
-            ResultSet result = table.executeQuery();
-            while (result.next()&&count < 100) {
-                collection.add(getWorker(result));
-            }
-        } catch(SQLException e) {
+        PreparedStatement table = connection.prepareStatement(WORKER_REQUEST);
+        ResultSet result = table.executeQuery();
+        while (result.next()&&count < 100) {
+            collection.add(getWorker(result));
         }
         return collection.stream();
     }
-    public Worker floor(Worker worker) {
-        try {
-            PreparedStatement floorStatement = connection.prepareStatement(FLOOR_REQUEST);
-            floorStatement.setInt(1, worker.getId());
-            floorStatement.setString(2, worker.getOwner());
-            ResultSet result = floorStatement.executeQuery();
-            if (result.next()) {
-                return getWorker(result);
-            }
-        } catch(SQLException e) { }
+    public Worker floor(Worker worker) throws SQLException{
+        PreparedStatement floorStatement = connection.prepareStatement(FLOOR_REQUEST);
+        floorStatement.setInt(1, worker.getId());
+        floorStatement.setString(2, worker.getOwner());
+        ResultSet result = floorStatement.executeQuery();
+        if (result.next()) {
+            return getWorker(result);
+        }
         return new Worker(worker.getId()+1);
     }
 

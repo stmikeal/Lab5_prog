@@ -32,9 +32,10 @@ public class CommandRegister extends Command{
         boolean result = false;
         try {
             result = collection.register(username, password);
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-            return new Speaker("Ошибка доступа к базе данных пользователей.");
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
         }
         if (result) {
             Speaker speaker = new Speaker("Успешная регистрация.");

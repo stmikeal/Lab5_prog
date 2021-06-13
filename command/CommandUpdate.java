@@ -2,6 +2,7 @@ package command;
 
 import element.Worker;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 import server.DataManager;
@@ -40,15 +41,21 @@ public class CommandUpdate extends Command{
     @Override
     public Speaker event(DataManager collection) {
         worker.setId(id);
-        Worker compared = collection.floor(new Worker(id));
-        if(id == compared.getId()) {
-            collection.add(worker);
-            collection.remove(compared);
-            speaker = new Speaker("Удачно заменили элемент.");
-            speaker.success();
+        try {
+            Worker compared = collection.floor(new Worker(id));
+            if (id == compared.getId()) {
+                worker.setOwner(username);
+                collection.add(worker);
+                collection.remove(compared);
+                speaker = new Speaker("Удачно заменили элемент.");
+                speaker.success();
+            } else {
+                speaker = new Speaker("Не смогли найти такой элемент.");
+                speaker.error();
+            }
             return speaker;
-        } else {
-            speaker = new Speaker("Не смогли найти такой элемент.");
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
             speaker.error();
             return speaker;
         }

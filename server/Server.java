@@ -1,18 +1,15 @@
 package server;
 
-import element.*;
-import exception.EnvException;
-import java.io.BufferedInputStream;
-import java.io.File;
+
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,12 +66,8 @@ public class Server {
             ServerLogger.logger.log(Level.WARNING, "userdata не содержит данных.");
             System.exit(221);
         }
-        Class.forName("org.postgresql.Driver");
-        DatabaseHandler DH = new DatabaseHandler("jdbc:postgresql://localhost:3175/studs", username, password);
-        DH.connect();
-        collection = new DataManager(DH);
 
-        
+        collection = new DataManager(connect(false));
         /*
         Блок чтения порта.
         При неудачном чтении выставляется значение по умолчанию.
@@ -138,6 +131,21 @@ public class Server {
 
     public static LocalDate getDate() {
         return createDate;
+    }
+    public static DatabaseHandler connect(boolean reconnected) {
+        DatabaseHandler DH = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            DH = new DatabaseHandler("jdbc:postgresql://localhost:3175/studs", username, password);
+            DH.connect();
+        } catch(SQLException | ClassNotFoundException e) {
+            if (!reconnected) {
+                System.out.println("Не удалось подключиться к базе данных. Соре:(");
+                System.exit(18);
+            }
+            System.out.println("Не удалось переподключиться к БД");
+        }
+        return DH;
     }
 }
 

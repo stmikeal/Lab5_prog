@@ -2,6 +2,7 @@ package command;
 
 import element.Worker;
 
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -22,8 +23,14 @@ public class CommandShow extends Command {
     
     @Override
     public Speaker event(DataManager collection) {
-        collection.stream().forEach(worker -> result+=worker.toString()+"\n---\n");
-        result = result.trim();
-        return new Speaker(result);
+        try {
+            collection.stream().forEach(worker -> result += worker.toString() + "\n---\n");
+            result = result.trim();
+            return new Speaker(result);
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
+            return speaker;
+        }
     }
 }

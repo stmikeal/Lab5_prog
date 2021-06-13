@@ -7,6 +7,7 @@ import server.DataManager;
 import tools.ReadWorker;
 import tools.Speaker;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 /**
@@ -48,12 +49,17 @@ public class CommandAddIfMin extends Command{
                 first = collection.first().getId();
             }
             if (worker.getId() < first) {
+                worker.setOwner(username);
                 collection.add(worker);
                 speaker = new Speaker("Мы добавили элемент в коллекцию!");
                 speaker.success();
                 return speaker;
             }
             speaker = new Speaker("Мы не добавили элемент в коллекцию.");
+            return speaker;
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
             return speaker;
         } catch (Exception e) {
             speaker = new Speaker("Мы не смогли добавить элемент в коллекцию.");

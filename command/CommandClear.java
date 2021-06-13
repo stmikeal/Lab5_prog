@@ -1,6 +1,8 @@
 package command;
 
 import element.Worker;
+
+import java.sql.SQLException;
 import java.util.TreeSet;
 
 import server.DataManager;
@@ -26,6 +28,10 @@ public class CommandClear extends Command {
             collection.clear(username);
             speaker = new Speaker("Мы очистили коллекцию!");
             speaker.success();
+            return speaker;
+        } catch (SQLException e) {
+            speaker = new Speaker("База данных сейчас недоступна.");
+            speaker.error();
             return speaker;
         } catch (Exception e) {
             speaker = new Speaker("Мы не смогли очистить коллекцию!");
