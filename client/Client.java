@@ -2,18 +2,12 @@ package client;
 
 import tools.*;
 import command.Command;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import static java.lang.Thread.sleep;
-
+import javafx.application.Application;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
